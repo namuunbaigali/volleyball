@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import TeamCard from '@/components/TeamCard';
+import AnimatedCounter from '@/components/AnimatedCounter';
 import { Users, Search, Hash } from 'lucide-react';
 
 interface Member { firstName: string; lastName: string; graduationYear: number; }
@@ -64,7 +65,7 @@ export default function TeamsPage() {
         <div className="mb-10 slide-up">
           <h1 className="text-4xl font-black text-white mb-2">Бүртгэгдсэн багууд</h1>
           <p className="text-gray-400">
-            Нийт <span className="text-violet-400 font-bold text-lg">{teams.length}</span> баг бүртгэгдсэн
+            Нийт <AnimatedCounter value={teams.length} className="text-violet-400 font-bold text-lg" /> баг бүртгэгдсэн
           </p>
         </div>
 
