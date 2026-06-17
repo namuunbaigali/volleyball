@@ -31,9 +31,9 @@ export default function TeamCard({ team }: TeamCardProps) {
 
   return (
     <Link href={`/teams/${team._id}`}>
-      <div className="group relative bg-white hover:bg-blue-50/30 border border-blue-100/80 hover:border-blue-300 rounded-2xl p-5 transition-all duration-300 cursor-pointer overflow-hidden hover:scale-[1.02] hover:shadow-lg hover:shadow-blue-100/50 shadow-sm shadow-blue-50">
-        <div className="relative">
-          <div className="flex items-start justify-between mb-4">
+      <div className="group bg-white border border-slate-200 rounded-xl p-5 hover:border-blue-200 hover:bg-slate-50/50 transition-colors cursor-pointer">
+        <div>
+          <div className="flex items-start justify-between mb-3">
             <div className="flex-1 min-w-0">
               <h3 className="text-slate-800 font-black text-base group-hover:text-blue-600 transition-colors truncate">
                 {team.teamName}

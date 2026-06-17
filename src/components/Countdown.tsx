@@ -62,7 +62,7 @@ export default function Countdown({ deadline }: { deadline: string }) {
       <div className="flex items-center gap-2 flex-wrap justify-center">
         {units.map(({ value, label }, i) => (
           <div key={label} className="flex items-center gap-2">
-            <div className="bg-white border border-blue-100 rounded-2xl px-4 py-3 min-w-[68px] text-center shadow-lg shadow-blue-100/50">
+            <div className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 min-w-[68px] text-center">
               <div className="text-3xl font-black text-blue-600 tabular-nums leading-none">
                 {String(value).padStart(2, '0')}
               </div>

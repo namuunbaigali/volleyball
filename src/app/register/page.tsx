@@ -160,15 +160,15 @@ export default function RegisterPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4">
-        <div className="text-center max-w-md bounce-in bg-white rounded-3xl p-10 shadow-xl shadow-blue-100/50 border border-blue-100">
+      <div className="min-h-screen bg-white flex items-center justify-center px-4">
+        <div className="text-center max-w-md bounce-in bg-white rounded-2xl p-10 border border-slate-200">
           <div className="w-24 h-24 bg-green-50 border border-green-200 rounded-3xl flex items-center justify-center mx-auto mb-6 float-anim">
             <CheckCircle className="w-12 h-12 text-green-500" />
           </div>
           <h1 className="text-3xl font-black text-slate-800 mb-3">Амжилттай бүртгэгдлээ!</h1>
           <p className="text-slate-500 mb-8">Таны багийн бүртгэл хүлээн авагдлаа. Админ баталгаажуулсны дараа харагдана.</p>
           <button onClick={resetForm}
-            className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-bold px-8 py-3 rounded-2xl transition-all hover:scale-105 shadow-lg shadow-blue-200">
+            className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-bold px-8 py-3 rounded-2xl transition-all hover:scale-105 
             Дахин бүртгүүлэх
           </button>
         </div>
@@ -177,7 +177,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen px-4 py-12">
+    <div className="min-h-screen bg-white px-4 py-12">
       <div className="max-w-3xl mx-auto">
         <div className="mb-10 slide-up">
           <h1 className="text-4xl font-black text-slate-800 mb-2">Баг бүртгүүлэх</h1>
@@ -186,7 +186,7 @@ export default function RegisterPage() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Category */}
-          <div className="bg-white shadow-lg shadow-blue-100/50 border border-blue-100/80 rounded-3xl p-6">
+          <div className="bg-white border border-slate-200 rounded-xl p-6">
             <h2 className="text-slate-800 font-bold text-lg mb-4">Тэмцээний төрөл</h2>
             <div className="grid grid-cols-2 gap-3">
               {CATEGORIES.map((cat, i) => (
@@ -206,7 +206,7 @@ export default function RegisterPage() {
           </div>
 
           {/* Team info */}
-          <div className="bg-white shadow-lg shadow-blue-100/50 border border-blue-100/80 rounded-3xl p-6 space-y-4">
+          <div className="bg-white border border-slate-200 rounded-xl p-6 space-y-4">
             <h2 className="text-slate-800 font-bold text-lg">Багийн мэдээлэл</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <InputField label="Багийн нэр" value={teamName} onChange={setTeamName} placeholder="Баг нэр" required />
@@ -217,7 +217,7 @@ export default function RegisterPage() {
           </div>
 
           {/* Members */}
-          <div className="bg-white shadow-lg shadow-blue-100/50 border border-blue-100/80 rounded-3xl p-6">
+          <div className="bg-white border border-slate-200 rounded-xl p-6">
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h2 className="text-slate-800 font-bold text-lg">Гишүүдийн мэдээлэл</h2>
@@ -283,7 +283,7 @@ export default function RegisterPage() {
           )}
 
           <button type="submit" disabled={submitting || (!isSoft && members.length < minMembers)}
-            className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 disabled:opacity-40 disabled:cursor-not-allowed text-white font-black py-4 rounded-2xl transition-all duration-200 shadow-lg shadow-blue-200 hover:shadow-blue-300 hover:scale-[1.01] text-lg">
+            className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 disabled:opacity-40 disabled:cursor-not-allowed text-white font-black py-4 rounded-2xl transition-all duration-200  text-lg">
             {submitting ? '⏳ Бүртгэж байна...' : '🏐 Баг бүртгүүлэх'}
           </button>
         </form>

@@ -47,7 +47,7 @@ export default function SchedulePage() {
   const filtered = activeCategory === 'Бүгд' ? matches : matches.filter(m => m.category === activeCategory);
 
   return (
-    <div className="min-h-screen px-4 py-12">
+    <div className="min-h-screen bg-white px-4 py-12">
       <div className="max-w-4xl mx-auto">
         <div className="mb-10 slide-up">
           <h1 className="text-4xl font-black text-slate-800 mb-2">Тоглолтын хуваарь</h1>
@@ -92,9 +92,9 @@ export default function SchedulePage() {
               const isDone = match.status === 'done';
 
               return (
-                <div key={match._id} className={`relative slide-up group ${isPlaying ? 'ring-2 ring-red-300' : ''}`}
+                <div key={match._id} className="slide-up"
                   style={{ animationDelay: `${i * 0.06}s` }}>
-                  <div className={`relative bg-white shadow-sm shadow-blue-50 border-l-4 ${isPlaying ? 'border-l-red-400' : 'border-l-blue-200'} border border-blue-100/80 hover:border-blue-200 rounded-2xl p-5 transition-all hover:shadow-md hover:shadow-blue-100/50 ${isDone ? 'opacity-70' : ''}`}>
+                  <div className={`bg-white border rounded-xl p-5 transition-colors ${isPlaying ? 'border-green-200 bg-green-50/30' : isDone ? 'border-slate-200 opacity-70' : 'border-slate-200 hover:border-slate-300'}`}>
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                       {/* Teams */}
                       <div className="flex items-center gap-3 flex-1">
