@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import TeamCard from '@/components/TeamCard';
+import AnimatedCounter from '@/components/AnimatedCounter';
 import { Users, Search, Hash } from 'lucide-react';
 
 interface Member { firstName: string; lastName: string; graduationYear: number; }
@@ -62,9 +63,9 @@ export default function TeamsPage() {
     <div className="min-h-screen bg-white px-4 py-12">
       <div className="max-w-6xl mx-auto">
         <div className="mb-10 slide-up">
-          <h1 className="text-4xl font-black text-slate-800 mb-2">Бүртгэгдсэн багууд</h1>
-          <p className="text-slate-500">
-            Нийт <span className="text-blue-600 font-bold text-lg">{teams.length}</span> баг бүртгэгдсэн
+          <h1 className="text-4xl font-black text-white mb-2">Бүртгэгдсэн багууд</h1>
+          <p className="text-gray-400">
+            Нийт <span className="text-violet-400 font-bold text-lg">{teams.length}</span> баг бүртгэгдсэн
           </p>
         </div>
 
