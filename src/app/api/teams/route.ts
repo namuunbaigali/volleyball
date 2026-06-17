@@ -8,10 +8,12 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const gender = searchParams.get('gender');
     const tournamentType = searchParams.get('tournamentType');
+    const gradYear = searchParams.get('gradYear');
 
     const baseQuery: Record<string, unknown> = { status: { $ne: 'rejected' } };
     if (gender) baseQuery.teamGender = gender;
     if (tournamentType) baseQuery.tournamentType = tournamentType;
+    if (gradYear) baseQuery['members.graduationYear'] = parseInt(gradYear);
 
     const teams = await Team.find(baseQuery).select(
       'teamName teamGender school members.firstName members.lastName members.graduationYear status tournamentType createdAt'
@@ -27,35 +29,38 @@ export async function POST(req: NextRequest) {
   try {
     await connectDB();
     const body = await req.json();
+    const { teamName, school, contactPhone, contactEmail, members, tournamentType } = body;
+    const teamGender = body.teamGender || 'mixed';
 
-    const { teamName, teamGender, school, contactPhone, contactEmail, members, tournamentType } = body;
-
-    if (!teamName || !teamGender || !school || !contactPhone || !contactEmail || !members) {
+    if (!teamName || !school || !contactPhone || !contactEmail || !members) {
       return NextResponse.json({ success: false, error: 'Бүх талбарыг бөглөнө үү' }, { status: 400 });
     }
 
     const isSoft = tournamentType === 'soft_volleyball';
-    const minMembers = isSoft ? 3 : 6;
+    const minMembers = isSoft ? 6 : 6;
     const maxMembers = isSoft ? 6 : 12;
 
     if (members.length < minMembers || members.length > maxMembers) {
       return NextResponse.json(
-        {
-          success: false,
-          error: isSoft
-            ? 'Софт волейболд 3-6 гишүүн байх ёстой'
-            : 'Багт 6-12 гишүүн байх ёстой',
-        },
+        { success: false, error: isSoft ? 'Софт волейболд яг 6 гишүүн (3 эрэгтэй + 3 эмэгтэй) байх ёстой' : 'Багт 6-12 гишүүн байх ёстой' },
         { status: 400 }
       );
     }
 
-    const existing = await Team.findOne({ teamName, teamGender });
+    if (isSoft) {
+      const maleCount = members.filter((m: { gender: string }) => m.gender === 'male').length;
+      const femaleCount = members.filter((m: { gender: string }) => m.gender === 'female').length;
+      if (maleCount !== 3 || femaleCount !== 3) {
+        return NextResponse.json(
+          { success: false, error: 'Софт волейболд яг 3 эрэгтэй + 3 эмэгтэй тоглогч байх ёстой' },
+          { status: 400 }
+        );
+      }
+    }
+
+    const existing = await Team.findOne({ teamName, tournamentType });
     if (existing) {
-      return NextResponse.json(
-        { success: false, error: 'Энэ нэртэй баг аль хэдийн бүртгэгдсэн байна' },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: 'Энэ нэртэй баг аль хэдийн бүртгэгдсэн байна' }, { status: 400 });
     }
 
     const team = await Team.create({

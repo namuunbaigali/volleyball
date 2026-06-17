@@ -4,8 +4,25 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   Lock, CheckCircle, XCircle, Eye, Trash2, Save,
   ChevronDown, ChevronUp, Settings, Users, Upload,
-  Download, X, Image as ImageIcon,
+  Download, X, Image as ImageIcon, Plus, Calendar, Play,
 } from 'lucide-react';
+
+interface IMatch {
+  _id: string;
+  team1Name: string;
+  team2Name: string;
+  category: string;
+  scheduledTime: string;
+  court: string;
+  status: 'scheduled' | 'playing' | 'done' | 'delayed';
+  delayMinutes: number;
+  score1: string;
+  score2: string;
+  note: string;
+  order: number;
+}
+
+const CATEGORIES_LIST = ['Волейбол (Эр)', 'Волейбол (Эм)', 'Холимог', 'Софт'];
 
 interface Member {
   firstName: string;
@@ -51,7 +68,11 @@ export default function AdminPage() {
   const [token, setToken] = useState('');
   const [loginError, setLoginError] = useState('');
   const [teams, setTeams] = useState<Team[]>([]);
-  const [activeTab, setActiveTab] = useState<'teams' | 'tournament'>('teams');
+  const [activeTab, setActiveTab] = useState<'teams' | 'tournament' | 'schedule'>('teams');
+  const [matches, setMatches] = useState<IMatch[]>([]);
+  const [editingMatch, setEditingMatch] = useState<string | null>(null);
+  const [newMatch, setNewMatch] = useState({ team1Name: '', team2Name: '', category: 'Волейбол (Эр)', scheduledTime: '', court: '1-р талбай', order: 0 });
+  const [showNewMatchForm, setShowNewMatchForm] = useState(false);
   const [expandedTeam, setExpandedTeam] = useState<string | null>(null);
   const [tournament, setTournament] = useState<TournamentInfo>({
     title: '',
@@ -93,14 +114,21 @@ export default function AdminPage() {
     }
   }, []);
 
+  const fetchMatches = useCallback(async () => {
+    const res = await fetch('/api/matches');
+    const data = await res.json();
+    if (data.success) setMatches(data.data);
+  }, []);
+
   useEffect(() => {
     const saved = sessionStorage.getItem('admin_token');
     if (saved) {
       setToken(saved);
       fetchTeams(saved);
       fetchTournament();
+      fetchMatches();
     }
-  }, [fetchTeams, fetchTournament]);
+  }, [fetchTeams, fetchTournament, fetchMatches]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -115,6 +143,7 @@ export default function AdminPage() {
       sessionStorage.setItem('admin_token', data.token);
       fetchTeams(data.token);
       fetchTournament();
+      fetchMatches();
     } else {
       setLoginError(data.error || 'Нэвтрэхэд алдаа гарлаа');
     }
@@ -195,6 +224,35 @@ export default function AdminPage() {
     }
   };
 
+  const createMatch = async () => {
+    const res = await fetch('/api/matches', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-key': token },
+      body: JSON.stringify(newMatch),
+    });
+    const data = await res.json();
+    if (data.success) {
+      setShowNewMatchForm(false);
+      setNewMatch({ team1Name: '', team2Name: '', category: 'Волейбол (Эр)', scheduledTime: '', court: '1-р талбай', order: 0 });
+      fetchMatches();
+    }
+  };
+
+  const updateMatch = async (id: string, updates: Partial<IMatch>) => {
+    await fetch(`/api/matches/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'x-admin-key': token },
+      body: JSON.stringify(updates),
+    });
+    fetchMatches();
+  };
+
+  const deleteMatch = async (id: string) => {
+    if (!confirm('Энэ тоглолтыг устгах уу?')) return;
+    await fetch(`/api/matches/${id}`, { method: 'DELETE', headers: { 'x-admin-key': token } });
+    fetchMatches();
+  };
+
   const exportExcel = () => {
     const link = document.createElement('a');
     link.href = '/api/admin/export';
@@ -268,16 +326,19 @@ export default function AdminPage() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-8 p-1 bg-white/5 border border-white/10 rounded-2xl w-fit">
+        <div className="flex flex-wrap gap-2 mb-8 p-1 bg-white/5 border border-white/10 rounded-2xl w-fit">
           {[
             { key: 'teams', label: 'Багууд', icon: Users },
+            { key: 'schedule', label: 'Хуваарь', icon: Calendar },
             { key: 'tournament', label: 'Тэмцээний мэдээлэл', icon: Settings },
           ].map((t) => (
             <button
               key={t.key}
               onClick={() => setActiveTab(t.key as typeof activeTab)}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-                activeTab === t.key ? 'bg-red-700 text-white' : 'text-gray-400 hover:text-white'
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                activeTab === t.key
+                  ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-lg'
+                  : 'text-gray-400 hover:text-white'
               }`}
             >
               <t.icon className="w-4 h-4" />
@@ -396,6 +457,160 @@ export default function AdminPage() {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {activeTab === 'schedule' && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <p className="text-gray-400 text-sm">{matches.length} тоглолт бүртгэгдсэн</p>
+              <button onClick={() => setShowNewMatchForm(!showNewMatchForm)}
+                className="flex items-center gap-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition-all hover:scale-105">
+                <Plus className="w-4 h-4" /> Тоглолт нэмэх
+              </button>
+            </div>
+
+            {showNewMatchForm && (
+              <div className="bg-white/6 border border-violet-500/30 rounded-2xl p-5 space-y-3">
+                <h3 className="text-white font-bold">Шинэ тоглолт</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {[
+                    { label: '1-р баг', key: 'team1Name', placeholder: 'Багийн нэр' },
+                    { label: '2-р баг', key: 'team2Name', placeholder: 'Багийн нэр' },
+                    { label: 'Талбай', key: 'court', placeholder: '1-р талбай' },
+                    { label: 'Дараалал', key: 'order', placeholder: '1', type: 'number' },
+                  ].map(f => (
+                    <div key={f.key}>
+                      <label className="block text-gray-400 text-xs mb-1">{f.label}</label>
+                      <input type={f.type || 'text'} placeholder={f.placeholder}
+                        value={String(newMatch[f.key as keyof typeof newMatch])}
+                        onChange={e => setNewMatch(p => ({ ...p, [f.key]: f.type === 'number' ? parseInt(e.target.value) || 0 : e.target.value }))}
+                        className="w-full bg-white/5 border border-white/10 focus:border-violet-500/50 rounded-xl px-3 py-2.5 text-white text-sm outline-none placeholder-gray-600" />
+                    </div>
+                  ))}
+                  <div>
+                    <label className="block text-gray-400 text-xs mb-1">Ангилал</label>
+                    <select value={newMatch.category} onChange={e => setNewMatch(p => ({ ...p, category: e.target.value }))}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm outline-none appearance-none">
+                      {CATEGORIES_LIST.map(c => <option key={c} value={c} className="bg-gray-900">{c}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-gray-400 text-xs mb-1">Огноо цаг</label>
+                    <input type="datetime-local" value={newMatch.scheduledTime}
+                      onChange={e => setNewMatch(p => ({ ...p, scheduledTime: e.target.value }))}
+                      className="w-full bg-white/5 border border-white/10 focus:border-violet-500/50 rounded-xl px-3 py-2.5 text-white text-sm outline-none" />
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={createMatch}
+                    className="bg-violet-600 hover:bg-violet-500 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-colors">
+                    Хадгалах
+                  </button>
+                  <button onClick={() => setShowNewMatchForm(false)}
+                    className="bg-white/5 hover:bg-white/10 text-gray-400 text-sm px-5 py-2.5 rounded-xl transition-colors">
+                    Цуцлах
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {matches.length === 0 ? (
+              <div className="text-center py-16 text-gray-600">
+                <Calendar className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                <p>Тоглолтын хуваарь байхгүй байна</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {matches.map((match) => (
+                  <div key={match._id} className="bg-white/5 border border-white/10 rounded-2xl p-4">
+                    {editingMatch === match._id ? (
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                          {[
+                            { label: '1-р баг', key: 'team1Name' },
+                            { label: '2-р баг', key: 'team2Name' },
+                            { label: 'Талбай', key: 'court' },
+                            { label: 'Оноо 1', key: 'score1' },
+                            { label: 'Оноо 2', key: 'score2' },
+                            { label: 'Тэмдэглэл', key: 'note' },
+                          ].map(f => (
+                            <div key={f.key}>
+                              <label className="block text-gray-400 text-xs mb-1">{f.label}</label>
+                              <input defaultValue={String(match[f.key as keyof IMatch] || '')}
+                                onBlur={e => updateMatch(match._id, { [f.key]: e.target.value })}
+                                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-sm outline-none focus:border-violet-500/50" />
+                            </div>
+                          ))}
+                          <div>
+                            <label className="block text-gray-400 text-xs mb-1">Статус</label>
+                            <select value={match.status} onChange={e => updateMatch(match._id, { status: e.target.value as IMatch['status'] })}
+                              className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-sm outline-none appearance-none">
+                              <option value="scheduled" className="bg-gray-900">Товлогдсон</option>
+                              <option value="playing" className="bg-gray-900">🔴 Тоглаж байна</option>
+                              <option value="done" className="bg-gray-900">✅ Дууссан</option>
+                              <option value="delayed" className="bg-gray-900">⚠️ Хойшлогдсон</option>
+                            </select>
+                          </div>
+                          {match.status === 'delayed' && (
+                            <div>
+                              <label className="block text-gray-400 text-xs mb-1">Хойшлолт (минут)</label>
+                              <input type="number" defaultValue={match.delayMinutes}
+                                onBlur={e => updateMatch(match._id, { delayMinutes: parseInt(e.target.value) || 0 })}
+                                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-sm outline-none" />
+                            </div>
+                          )}
+                          <div>
+                            <label className="block text-gray-400 text-xs mb-1">Огноо цаг</label>
+                            <input type="datetime-local" defaultValue={match.scheduledTime?.slice(0, 16)}
+                              onBlur={e => updateMatch(match._id, { scheduledTime: e.target.value })}
+                              className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-sm outline-none" />
+                          </div>
+                        </div>
+                        <button onClick={() => setEditingMatch(null)}
+                          className="text-gray-400 hover:text-white text-sm px-4 py-2 bg-white/5 hover:bg-white/10 rounded-xl transition-colors">
+                          Хаах
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 flex-wrap">
+                            <span className="text-white font-bold">{match.team1Name}</span>
+                            <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${
+                              match.status === 'playing' ? 'bg-green-500/20 text-green-300' :
+                              match.status === 'delayed' ? 'bg-orange-500/20 text-orange-300' :
+                              match.status === 'done' ? 'bg-gray-500/20 text-gray-400' :
+                              'bg-blue-500/20 text-blue-300'
+                            }`}>
+                              {match.status === 'playing' ? '🔴 LIVE' : match.status === 'delayed' ? '⚠️' : match.status === 'done' ? '✅' : 'VS'}
+                            </span>
+                            <span className="text-white font-bold">{match.team2Name}</span>
+                            {match.score1 && <span className="text-violet-300 font-black text-sm">{match.score1}:{match.score2}</span>}
+                          </div>
+                          <div className="text-gray-500 text-xs mt-1 flex gap-3 flex-wrap">
+                            <span>{match.category}</span>
+                            <span>{match.court}</span>
+                            <span>{match.scheduledTime ? new Date(match.scheduledTime).toLocaleString('mn-MN') : ''}</span>
+                            {match.delayMinutes > 0 && <span className="text-orange-400">+{match.delayMinutes}мин</span>}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <button onClick={() => setEditingMatch(match._id)}
+                            className="bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 text-xs px-3 py-2 rounded-xl transition-colors flex items-center gap-1.5">
+                            <Play className="w-3.5 h-3.5" /> Засах
+                          </button>
+                          <button onClick={() => deleteMatch(match._id)}
+                            className="bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 text-xs px-3 py-2 rounded-xl transition-colors">
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 

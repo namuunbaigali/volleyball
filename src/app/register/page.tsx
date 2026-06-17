@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, Trash2, CheckCircle, AlertCircle, Users, ChevronDown } from 'lucide-react';
+import { Plus, Trash2, CheckCircle, AlertCircle, ChevronDown } from 'lucide-react';
 
 interface Member {
   firstName: string;
@@ -13,78 +13,69 @@ interface Member {
   gender: 'male' | 'female';
 }
 
-const emptyMember = (): Member => ({
-  firstName: '',
-  lastName: '',
-  graduationYear: '',
-  teacherName: '',
-  phone: '',
-  age: '',
-  gender: 'male',
+type CategoryKey = 'v_male' | 'v_female' | 'mixed' | 'soft';
+
+const CATEGORIES: { key: CategoryKey; label: string; sub: string; icon: string; color: string }[] = [
+  { key: 'v_male', label: 'Волейбол (Эр)', sub: '6–12 гишүүн', icon: '🏐', color: 'from-blue-600 to-blue-500' },
+  { key: 'v_female', label: 'Волейбол (Эм)', sub: '6–12 гишүүн', icon: '🏐', color: 'from-pink-600 to-pink-500' },
+  { key: 'mixed', label: 'Холимог', sub: '6–12 гишүүн', icon: '⚡', color: 'from-amber-600 to-orange-500' },
+  { key: 'soft', label: 'Софт', sub: '3♂ + 3♀ = 6', icon: '🌟', color: 'from-violet-600 to-purple-500' },
+];
+
+const emptyMember = (gender: 'male' | 'female' = 'male'): Member => ({
+  firstName: '', lastName: '', graduationYear: '', teacherName: '', phone: '', age: '', gender,
 });
 
-const InputField = ({
-  label,
-  value,
-  onChange,
-  type = 'text',
-  placeholder,
-  required,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  type?: string;
-  placeholder?: string;
-  required?: boolean;
+const InputField = ({ label, value, onChange, type = 'text', placeholder, required }: {
+  label: string; value: string; onChange: (v: string) => void;
+  type?: string; placeholder?: string; required?: boolean;
 }) => (
   <div>
     <label className="block text-gray-300 text-sm font-medium mb-1.5">
-      {label} {required && <span className="text-red-400">*</span>}
+      {label} {required && <span className="text-violet-400">*</span>}
     </label>
     <input
-      type={type}
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder={placeholder}
-      required={required}
-      className="w-full bg-white/5 border border-white/10 focus:border-amber-500/60 rounded-xl px-4 py-3 text-white placeholder-gray-600 outline-none transition-colors text-sm"
+      type={type} value={value} onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder} required={required}
+      className="w-full bg-white/6 border border-white/12 focus:border-violet-500/70 focus:bg-white/8 rounded-xl px-4 py-3 text-white placeholder-gray-600 outline-none transition-all text-sm"
     />
   </div>
 );
 
 export default function RegisterPage() {
+  const [category, setCategory] = useState<CategoryKey>('v_male');
   const [teamName, setTeamName] = useState('');
-  const [teamGender, setTeamGender] = useState<'male' | 'female'>('male');
   const [school, setSchool] = useState('');
   const [contactPhone, setContactPhone] = useState('');
   const [contactEmail, setContactEmail] = useState('');
-  const [tournamentType, setTournamentType] = useState<'volleyball' | 'soft_volleyball'>('volleyball');
-  const [members, setMembers] = useState<Member[]>(Array.from({ length: 6 }, emptyMember));
+  const [members, setMembers] = useState<Member[]>(Array.from({ length: 6 }, () => emptyMember()));
+  const [softMale, setSoftMale] = useState<Member[]>(Array.from({ length: 3 }, () => emptyMember('male')));
+  const [softFemale, setSoftFemale] = useState<Member[]>(Array.from({ length: 3 }, () => emptyMember('female')));
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
 
-  const isSoft = tournamentType === 'soft_volleyball';
-  const minMembers = isSoft ? 3 : 6;
-  const maxMembers = isSoft ? 6 : 12;
+  const isSoft = category === 'soft';
+  const minMembers = 6;
+  const maxMembers = 12;
 
-  const handleTournamentTypeChange = (newType: 'volleyball' | 'soft_volleyball') => {
-    setTournamentType(newType);
-    const newMin = newType === 'soft_volleyball' ? 3 : 6;
-    setMembers(Array.from({ length: newMin }, emptyMember));
+  const handleCategoryChange = (cat: CategoryKey) => {
+    setCategory(cat);
+    if (cat !== 'soft') {
+      setMembers(Array.from({ length: 6 }, () => emptyMember()));
+    }
   };
 
   const updateMember = (index: number, field: keyof Member, value: string) => {
     setMembers((prev) => prev.map((m, i) => (i === index ? { ...m, [field]: value } : m)));
   };
 
-  const addMember = () => {
-    if (members.length < maxMembers) setMembers((prev) => [...prev, emptyMember()]);
-  };
-
-  const removeMember = (index: number) => {
-    if (members.length > minMembers) setMembers((prev) => prev.filter((_, i) => i !== index));
+  const updateSoftMember = (list: 'male' | 'female', index: number, field: keyof Member, value: string) => {
+    if (list === 'male') {
+      setSoftMale((prev) => prev.map((m, i) => (i === index ? { ...m, [field]: value } : m)));
+    } else {
+      setSoftFemale((prev) => prev.map((m, i) => (i === index ? { ...m, [field]: value } : m)));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -92,30 +83,26 @@ export default function RegisterPage() {
     setError('');
     setSubmitting(true);
 
+    const allMembers = isSoft
+      ? [...softMale.map(m => ({ ...m, gender: 'male' as const })), ...softFemale.map(m => ({ ...m, gender: 'female' as const }))]
+      : members;
+
+    const tournamentType = category === 'soft' ? 'soft_volleyball' : category === 'mixed' ? 'mixed' : 'volleyball';
+    const teamGender = category === 'v_male' ? 'male' : category === 'v_female' ? 'female' : 'mixed';
+
     try {
       const res = await fetch('/api/teams', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          teamName,
-          teamGender,
-          school,
-          contactPhone,
-          contactEmail,
-          tournamentType,
-          members: members.map((m) => ({
-            ...m,
-            age: parseInt(m.age),
-            graduationYear: parseInt(m.graduationYear),
-          })),
+          teamName, school, contactPhone, contactEmail,
+          teamGender, tournamentType,
+          members: allMembers.map((m) => ({ ...m, age: parseInt(m.age), graduationYear: parseInt(m.graduationYear) })),
         }),
       });
       const data = await res.json();
-      if (data.success) {
-        setSuccess(true);
-      } else {
-        setError(data.error || 'Алдаа гарлаа');
-      }
+      if (data.success) setSuccess(true);
+      else setError(data.error || 'Алдаа гарлаа');
     } catch {
       setError('Сервертэй холбогдоход алдаа гарлаа');
     } finally {
@@ -124,30 +111,64 @@ export default function RegisterPage() {
   };
 
   const resetForm = () => {
-    setSuccess(false);
-    setTeamName('');
-    setSchool('');
-    setContactPhone('');
-    setContactEmail('');
-    setTournamentType('volleyball');
-    setMembers(Array.from({ length: 6 }, emptyMember));
+    setSuccess(false); setTeamName(''); setSchool('');
+    setContactPhone(''); setContactEmail('');
+    setMembers(Array.from({ length: 6 }, () => emptyMember()));
+    setSoftMale(Array.from({ length: 3 }, () => emptyMember('male')));
+    setSoftFemale(Array.from({ length: 3 }, () => emptyMember('female')));
+    setCategory('v_male');
   };
+
+  const MemberCard = ({ member, index, onUpdate, label }: {
+    member: Member; index: number;
+    onUpdate: (i: number, f: keyof Member, v: string) => void;
+    label?: string;
+  }) => (
+    <div className="bg-white/4 border border-white/10 rounded-2xl p-5">
+      <div className="flex items-center justify-between mb-4">
+        <span className="text-violet-400 text-sm font-bold">{label || `#${index + 1} гишүүн`}</span>
+        {!isSoft && members.length > minMembers && (
+          <button type="button" onClick={() => setMembers(p => p.filter((_, i) => i !== index))}
+            className="text-gray-600 hover:text-red-400 p-1 rounded-lg transition-colors">
+            <Trash2 className="w-4 h-4" />
+          </button>
+        )}
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <InputField label="Овог" value={member.lastName} onChange={(v) => onUpdate(index, 'lastName', v)} placeholder="Овог" required />
+        <InputField label="Нэр" value={member.firstName} onChange={(v) => onUpdate(index, 'firstName', v)} placeholder="Нэр" required />
+        <InputField label="Төгссөн он" value={member.graduationYear} onChange={(v) => onUpdate(index, 'graduationYear', v)} type="number" placeholder="2020" required />
+        <InputField label="Багшийн нэр" value={member.teacherName} onChange={(v) => onUpdate(index, 'teacherName', v)} placeholder="Багшийн нэр" required />
+        <InputField label="Утас" value={member.phone} onChange={(v) => onUpdate(index, 'phone', v)} type="tel" placeholder="99001234" required />
+        <InputField label="Нас" value={member.age} onChange={(v) => onUpdate(index, 'age', v)} type="number" placeholder="25" required />
+        {!isSoft && (
+          <div>
+            <label className="block text-gray-300 text-sm font-medium mb-1.5">Хүйс <span className="text-violet-400">*</span></label>
+            <div className="relative">
+              <select value={member.gender} onChange={(e) => onUpdate(index, 'gender', e.target.value)}
+                className="w-full bg-white/6 border border-white/12 focus:border-violet-500/70 rounded-xl px-4 py-3 text-white outline-none text-sm appearance-none cursor-pointer">
+                <option value="male" className="bg-gray-900">Эрэгтэй</option>
+                <option value="female" className="bg-gray-900">Эмэгтэй</option>
+              </select>
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 
   if (success) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
-        <div className="text-center max-w-md">
-          <div className="w-20 h-20 bg-green-500/15 border border-green-500/30 rounded-3xl flex items-center justify-center mx-auto mb-6">
-            <CheckCircle className="w-10 h-10 text-green-400" />
+        <div className="text-center max-w-md bounce-in">
+          <div className="w-24 h-24 bg-green-500/15 border border-green-500/30 rounded-3xl flex items-center justify-center mx-auto mb-6 float-anim">
+            <CheckCircle className="w-12 h-12 text-green-400" />
           </div>
           <h1 className="text-3xl font-black text-white mb-3">Амжилттай бүртгэгдлээ!</h1>
-          <p className="text-gray-400 mb-8">
-            Таны багийн бүртгэл хүлээн авагдлаа. Админ баталгаажуулсны дараа багийн жагсаалтад харагдана.
-          </p>
-          <button
-            onClick={resetForm}
-            className="bg-red-700 hover:bg-red-600 text-white font-semibold px-8 py-3 rounded-2xl transition-colors"
-          >
+          <p className="text-gray-400 mb-8">Таны багийн бүртгэл хүлээн авагдлаа. Админ баталгаажуулсны дараа харагдана.</p>
+          <button onClick={resetForm}
+            className="bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white font-bold px-8 py-3 rounded-2xl transition-all hover:scale-105 shadow-lg shadow-violet-600/30">
             Дахин бүртгүүлэх
           </button>
         </div>
@@ -158,37 +179,27 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen px-4 py-12">
       <div className="max-w-3xl mx-auto">
-        <div className="mb-10">
+        <div className="mb-10 slide-up">
           <h1 className="text-4xl font-black text-white mb-2">Баг бүртгүүлэх</h1>
-          <p className="text-gray-400">
-            Бүх талбарыг үнэн зөв бөглөнө үү.{' '}
-            {isSoft ? '3-6 гишүүн бүртгэх боломжтой.' : '6-12 гишүүн бүртгэх боломжтой.'}
-          </p>
+          <p className="text-gray-400">Тэмцээний төрлөө сонгоод бүх талбарыг бөглөнө үү.</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Tournament type selector */}
+          {/* Category */}
           <div className="bg-white/5 border border-white/10 rounded-3xl p-6">
             <h2 className="text-white font-bold text-lg mb-4">Тэмцээний төрөл</h2>
             <div className="grid grid-cols-2 gap-3">
-              {(
-                [
-                  { value: 'volleyball', label: 'Волейбол', sub: '6–12 гишүүн' },
-                  { value: 'soft_volleyball', label: 'Софт Волейбол', sub: '3–6 гишүүн' },
-                ] as { value: 'volleyball' | 'soft_volleyball'; label: string; sub: string }[]
-              ).map((opt) => (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => handleTournamentTypeChange(opt.value)}
-                  className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all duration-200 ${
-                    tournamentType === opt.value
-                      ? 'border-amber-500 bg-amber-500/10 text-white'
-                      : 'border-white/10 bg-white/3 text-gray-400 hover:border-white/20 hover:text-white'
-                  }`}
-                >
-                  <span className="font-bold text-base">{opt.label}</span>
-                  <span className="text-xs mt-1 opacity-70">{opt.sub}</span>
+              {CATEGORIES.map((cat, i) => (
+                <button key={cat.key} type="button" onClick={() => handleCategoryChange(cat.key)}
+                  style={{ animationDelay: `${i * 0.08}s` }}
+                  className={`bounce-in flex flex-col items-center justify-center p-5 rounded-2xl border-2 transition-all duration-200 ${
+                    category === cat.key
+                      ? `border-violet-500 bg-gradient-to-br ${cat.color} bg-opacity-20 text-white shadow-lg`
+                      : 'border-white/10 bg-white/3 text-gray-400 hover:border-white/25 hover:text-white hover:scale-105'
+                  }`}>
+                  <span className="text-2xl mb-2">{cat.icon}</span>
+                  <span className="font-bold text-sm text-center">{cat.label}</span>
+                  <span className="text-xs mt-1 opacity-70">{cat.sub}</span>
                 </button>
               ))}
             </div>
@@ -199,27 +210,9 @@ export default function RegisterPage() {
             <h2 className="text-white font-bold text-lg">Багийн мэдээлэл</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <InputField label="Багийн нэр" value={teamName} onChange={setTeamName} placeholder="Баг нэр" required />
-              <div>
-                <label className="block text-gray-300 text-sm font-medium mb-1.5">
-                  Ангилал <span className="text-red-400">*</span>
-                </label>
-                <div className="relative">
-                  <select
-                    value={teamGender}
-                    onChange={(e) => setTeamGender(e.target.value as 'male' | 'female')}
-                    className="w-full bg-white/5 border border-white/10 focus:border-amber-500/60 rounded-xl px-4 py-3 text-white outline-none transition-colors text-sm appearance-none cursor-pointer"
-                  >
-                    <option value="male" className="bg-gray-900">Эрэгтэй</option>
-                    <option value="female" className="bg-gray-900">Эмэгтэй</option>
-                  </select>
-                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
-                </div>
-              </div>
-            </div>
-            <InputField label="Сургуулийн нэр" value={school} onChange={setSchool} placeholder="Сургуулийн нэр" required />
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <InputField label="Сургуулийн нэр" value={school} onChange={setSchool} placeholder="Сургуулийн нэр" required />
               <InputField label="Холбоо барих утас" value={contactPhone} onChange={setContactPhone} type="tel" placeholder="99001234" required />
-              <InputField label="И-мэйл хаяг" value={contactEmail} onChange={setContactEmail} type="email" placeholder="example@email.com" required />
+              <InputField label="И-мэйл" value={contactEmail} onChange={setContactEmail} type="email" placeholder="example@email.com" required />
             </div>
           </div>
 
@@ -227,74 +220,59 @@ export default function RegisterPage() {
           <div className="bg-white/5 border border-white/10 rounded-3xl p-6">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="text-white font-bold text-lg flex items-center gap-2">
-                  <Users className="w-5 h-5 text-amber-400" />
-                  Гишүүдийн мэдээлэл
-                </h2>
-                <p className="text-gray-500 text-sm mt-0.5">
-                  {members.length}/{maxMembers} гишүүн{' '}
-                  {members.length < minMembers && (
-                    <span className="text-red-400">(хамгийн багадаа {minMembers} шаардлагатай)</span>
-                  )}
-                </p>
-                {isSoft && (
-                  <p className="text-amber-400/70 text-xs mt-1">Хамгийн багадаа 3 гишүүн</p>
+                <h2 className="text-white font-bold text-lg">Гишүүдийн мэдээлэл</h2>
+                {!isSoft && (
+                  <p className="text-gray-500 text-sm mt-0.5">
+                    {members.length}/{maxMembers} гишүүн
+                    {members.length < minMembers && <span className="text-red-400"> (хамгийн багадаа {minMembers})</span>}
+                  </p>
                 )}
               </div>
-              {members.length < maxMembers && (
-                <button
-                  type="button"
-                  onClick={addMember}
-                  className="flex items-center gap-2 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
-                >
+              {!isSoft && members.length < maxMembers && (
+                <button type="button" onClick={() => setMembers(p => [...p, emptyMember()])}
+                  className="flex items-center gap-2 bg-violet-600/20 hover:bg-violet-600/30 border border-violet-500/30 text-violet-300 text-sm font-semibold px-4 py-2 rounded-xl transition-all hover:scale-105">
                   <Plus className="w-4 h-4" />
-                  Гишүүн нэмэх
+                  Нэмэх
                 </button>
               )}
             </div>
 
-            <div className="space-y-4">
-              {members.map((member, i) => (
-                <div key={i} className="bg-white/3 border border-white/8 rounded-2xl p-5">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-amber-400 text-sm font-bold"># {i + 1} гишүүн</span>
-                    {members.length > minMembers && (
-                      <button
-                        type="button"
-                        onClick={() => removeMember(i)}
-                        className="text-gray-600 hover:text-red-400 p-1 rounded-lg transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    )}
+            {isSoft ? (
+              <div className="space-y-6">
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-2 h-2 rounded-full bg-blue-400"></div>
+                    <h3 className="text-blue-300 font-bold">Эрэгтэй тоглогчид (3)</h3>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <InputField label="Овог" value={member.lastName} onChange={(v) => updateMember(i, 'lastName', v)} placeholder="Овог" required />
-                    <InputField label="Нэр" value={member.firstName} onChange={(v) => updateMember(i, 'firstName', v)} placeholder="Нэр" required />
-                    <InputField label="Сургууль төгссөн он" value={member.graduationYear} onChange={(v) => updateMember(i, 'graduationYear', v)} type="number" placeholder="2020" required />
-                    <InputField label="Багшийн нэр" value={member.teacherName} onChange={(v) => updateMember(i, 'teacherName', v)} placeholder="Багшийн нэр" required />
-                    <InputField label="Утасны дугаар" value={member.phone} onChange={(v) => updateMember(i, 'phone', v)} type="tel" placeholder="99001234" required />
-                    <InputField label="Нас" value={member.age} onChange={(v) => updateMember(i, 'age', v)} type="number" placeholder="25" required />
-                    <div>
-                      <label className="block text-gray-300 text-sm font-medium mb-1.5">
-                        Хүйс <span className="text-red-400">*</span>
-                      </label>
-                      <div className="relative">
-                        <select
-                          value={member.gender}
-                          onChange={(e) => updateMember(i, 'gender', e.target.value)}
-                          className="w-full bg-white/5 border border-white/10 focus:border-amber-500/60 rounded-xl px-4 py-3 text-white outline-none transition-colors text-sm appearance-none cursor-pointer"
-                        >
-                          <option value="male" className="bg-gray-900">Эрэгтэй</option>
-                          <option value="female" className="bg-gray-900">Эмэгтэй</option>
-                        </select>
-                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
-                      </div>
-                    </div>
+                  <div className="space-y-3">
+                    {softMale.map((m, i) => (
+                      <MemberCard key={`m${i}`} member={m} index={i}
+                        onUpdate={(idx, f, v) => updateSoftMember('male', idx, f, v)}
+                        label={`Эрэгтэй #${i + 1}`} />
+                    ))}
                   </div>
                 </div>
-              ))}
-            </div>
+                <div className="border-t border-white/10 pt-6">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-2 h-2 rounded-full bg-pink-400"></div>
+                    <h3 className="text-pink-300 font-bold">Эмэгтэй тоглогчид (3)</h3>
+                  </div>
+                  <div className="space-y-3">
+                    {softFemale.map((m, i) => (
+                      <MemberCard key={`f${i}`} member={m} index={i}
+                        onUpdate={(idx, f, v) => updateSoftMember('female', idx, f, v)}
+                        label={`Эмэгтэй #${i + 1}`} />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {members.map((member, i) => (
+                  <MemberCard key={i} member={member} index={i} onUpdate={updateMember} />
+                ))}
+              </div>
+            )}
           </div>
 
           {error && (
@@ -304,12 +282,9 @@ export default function RegisterPage() {
             </div>
           )}
 
-          <button
-            type="submit"
-            disabled={submitting || members.length < minMembers}
-            className="w-full bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 rounded-2xl transition-all duration-200 shadow-lg shadow-red-700/30"
-          >
-            {submitting ? 'Бүртгэж байна...' : 'Баг бүртгүүлэх'}
+          <button type="submit" disabled={submitting || (!isSoft && members.length < minMembers)}
+            className="w-full bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-black py-4 rounded-2xl transition-all duration-200 shadow-lg shadow-violet-600/30 hover:shadow-violet-600/50 hover:scale-[1.01] text-lg">
+            {submitting ? '⏳ Бүртгэж байна...' : '🏐 Баг бүртгүүлэх'}
           </button>
         </form>
       </div>

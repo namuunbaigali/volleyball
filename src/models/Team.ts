@@ -12,13 +12,13 @@ export interface IMember {
 
 export interface ITeam extends Document {
   teamName: string;
-  teamGender: 'male' | 'female';
+  teamGender: 'male' | 'female' | 'mixed';
   school: string;
   contactPhone: string;
   contactEmail: string;
   members: IMember[];
   status: 'pending' | 'approved' | 'rejected';
-  tournamentType: 'volleyball' | 'soft_volleyball';
+  tournamentType: 'volleyball' | 'mixed' | 'soft_volleyball';
   createdAt: Date;
 }
 
@@ -35,18 +35,16 @@ const MemberSchema = new Schema<IMember>({
 const TeamSchema = new Schema<ITeam>(
   {
     teamName: { type: String, required: true },
-    teamGender: { type: String, enum: ['male', 'female'], required: true },
+    teamGender: { type: String, enum: ['male', 'female', 'mixed'], default: 'male' },
     school: { type: String, required: true },
     contactPhone: { type: String, required: true },
     contactEmail: { type: String, required: true },
     tournamentType: {
       type: String,
-      enum: ['volleyball', 'soft_volleyball'],
+      enum: ['volleyball', 'mixed', 'soft_volleyball'],
       default: 'volleyball',
     },
-    members: {
-      type: [MemberSchema],
-    },
+    members: { type: [MemberSchema] },
     status: {
       type: String,
       enum: ['pending', 'approved', 'rejected'],
