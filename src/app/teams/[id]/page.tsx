@@ -42,29 +42,30 @@ export default async function TeamDetailPage({ params }: { params: Promise<{ id:
       <div className="max-w-4xl mx-auto">
         <Link
           href="/teams"
-          className="inline-flex items-center gap-2 text-gray-400 hover:text-white text-sm mb-8 transition-colors group"
+          className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 text-sm mb-8 transition-colors group font-medium"
         >
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
           Багуудруу буцах
         </Link>
 
         {/* Team header */}
-        <div className="bg-gradient-to-r from-violet-900/30 to-cyan-900/20 border border-violet-500/20 rounded-3xl p-8 mb-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl p-8 mb-6 shadow-xl shadow-blue-200/50 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
+          <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-3 mb-2">
                 <h1 className="text-3xl font-black text-white">{team.teamName}</h1>
                 <span
                   className={`text-xs font-bold px-3 py-1 rounded-full border ${
                     team.teamGender === 'male'
-                      ? 'bg-blue-500/15 text-blue-300 border-blue-500/30'
-                      : 'bg-pink-500/15 text-pink-300 border-pink-500/30'
+                      ? 'bg-blue-500/30 text-blue-100 border-blue-400/50'
+                      : 'bg-pink-500/30 text-pink-100 border-pink-400/50'
                   }`}
                 >
                   {team.teamGender === 'male' ? 'Эрэгтэй' : 'Эмэгтэй'}
                 </span>
               </div>
-              <div className="flex flex-wrap gap-4 text-gray-400 text-sm">
+              <div className="flex flex-wrap gap-4 text-blue-100 text-sm">
                 <span className="flex items-center gap-1.5">
                   <School className="w-4 h-4" />
                   {team.school}
@@ -78,16 +79,16 @@ export default async function TeamDetailPage({ params }: { params: Promise<{ id:
             <div className="flex flex-col gap-2 text-sm">
               <a
                 href={`tel:${team.contactPhone}`}
-                className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors"
+                className="flex items-center gap-2 text-blue-100 hover:text-white transition-colors"
               >
-                <Phone className="w-4 h-4 text-violet-400" />
+                <Phone className="w-4 h-4 text-blue-200" />
                 {team.contactPhone}
               </a>
               <a
                 href={`mailto:${team.contactEmail}`}
-                className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors"
+                className="flex items-center gap-2 text-blue-100 hover:text-white transition-colors"
               >
-                <Mail className="w-4 h-4 text-violet-400" />
+                <Mail className="w-4 h-4 text-blue-200" />
                 {team.contactEmail}
               </a>
             </div>
@@ -96,48 +97,48 @@ export default async function TeamDetailPage({ params }: { params: Promise<{ id:
 
         {/* Members */}
         <div>
-          <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-            <Users className="w-5 h-5 text-violet-400" />
+          <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+            <Users className="w-5 h-5 text-blue-500" />
             Багийн гишүүд
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {team.members.map((m, i) => (
               <div
                 key={i}
-                className="bg-white/5 border border-white/10 hover:border-violet-500/30 rounded-2xl p-5 transition-colors"
+                className="bg-white border border-blue-100/80 hover:border-blue-200 rounded-2xl p-5 transition-all shadow-sm hover:shadow-md hover:shadow-blue-100/50"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
                     <div
                       className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold ${
                         m.gender === 'male'
-                          ? 'bg-blue-500/15 text-blue-300'
-                          : 'bg-pink-500/15 text-pink-300'
+                          ? 'bg-blue-100 text-blue-700'
+                          : 'bg-pink-100 text-pink-700'
                       }`}
                     >
                       {i + 1}
                     </div>
                     <div>
-                      <p className="text-white font-semibold">
+                      <p className="text-slate-800 font-semibold">
                         {m.lastName} {m.firstName}
                       </p>
-                      <p className="text-gray-500 text-xs">
+                      <p className="text-slate-400 text-xs">
                         {m.gender === 'male' ? 'Эрэгтэй' : 'Эмэгтэй'} · {m.age} нас
                       </p>
                     </div>
                   </div>
-                  <span className="text-gray-400 text-xs font-mono bg-white/5 px-2 py-1 rounded-lg">
+                  <span className="text-slate-500 text-xs font-mono bg-slate-100 px-2 py-1 rounded-lg">
                     {m.graduationYear}
                   </span>
                 </div>
                 <div className="space-y-1.5 text-sm">
-                  <div className="flex items-center gap-2 text-gray-400">
+                  <div className="flex items-center gap-2 text-slate-500">
                     <User className="w-3.5 h-3.5 shrink-0" />
                     <span>Багш: {m.teacherName}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-gray-400">
+                  <div className="flex items-center gap-2 text-slate-500">
                     <Phone className="w-3.5 h-3.5 shrink-0" />
-                    <a href={`tel:${m.phone}`} className="hover:text-white transition-colors">
+                    <a href={`tel:${m.phone}`} className="hover:text-blue-600 transition-colors">
                       {m.phone}
                     </a>
                   </div>

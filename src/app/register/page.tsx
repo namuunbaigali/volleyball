@@ -15,11 +15,11 @@ interface Member {
 
 type CategoryKey = 'v_male' | 'v_female' | 'mixed' | 'soft';
 
-const CATEGORIES: { key: CategoryKey; label: string; sub: string; icon: string; color: string }[] = [
-  { key: 'v_male', label: 'Волейбол (Эр)', sub: '6–12 гишүүн', icon: '🏐', color: 'from-blue-600 to-blue-500' },
-  { key: 'v_female', label: 'Волейбол (Эм)', sub: '6–12 гишүүн', icon: '🏐', color: 'from-pink-600 to-pink-500' },
-  { key: 'mixed', label: 'Холимог', sub: '6–12 гишүүн', icon: '⚡', color: 'from-amber-600 to-orange-500' },
-  { key: 'soft', label: 'Софт', sub: '3♂ + 3♀ = 6', icon: '🌟', color: 'from-violet-600 to-purple-500' },
+const CATEGORIES: { key: CategoryKey; label: string; sub: string; icon: string; borderColor: string; bgColor: string }[] = [
+  { key: 'v_male', label: 'Волейбол (Эр)', sub: '6–12 гишүүн', icon: '🏐', borderColor: 'border-blue-500', bgColor: 'bg-blue-50' },
+  { key: 'v_female', label: 'Волейбол (Эм)', sub: '6–12 гишүүн', icon: '🏐', borderColor: 'border-pink-500', bgColor: 'bg-pink-50' },
+  { key: 'mixed', label: 'Холимог', sub: '6–12 гишүүн', icon: '⚡', borderColor: 'border-amber-500', bgColor: 'bg-amber-50' },
+  { key: 'soft', label: 'Софт', sub: '3♂ + 3♀ = 6', icon: '🌟', borderColor: 'border-purple-500', bgColor: 'bg-purple-50' },
 ];
 
 const emptyMember = (gender: 'male' | 'female' = 'male'): Member => ({
@@ -31,13 +31,13 @@ const InputField = ({ label, value, onChange, type = 'text', placeholder, requir
   type?: string; placeholder?: string; required?: boolean;
 }) => (
   <div>
-    <label className="block text-gray-300 text-sm font-medium mb-1.5">
-      {label} {required && <span className="text-violet-400">*</span>}
+    <label className="block text-slate-600 text-sm font-medium mb-1.5">
+      {label} {required && <span className="text-blue-500">*</span>}
     </label>
     <input
       type={type} value={value} onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder} required={required}
-      className="w-full bg-white/6 border border-white/12 focus:border-violet-500/70 focus:bg-white/8 rounded-xl px-4 py-3 text-white placeholder-gray-600 outline-none transition-all text-sm"
+      className="w-full bg-white border border-slate-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 rounded-xl px-4 py-3 text-slate-800 placeholder-slate-400 outline-none transition-all text-sm"
     />
   </div>
 );
@@ -124,12 +124,12 @@ export default function RegisterPage() {
     onUpdate: (i: number, f: keyof Member, v: string) => void;
     label?: string;
   }) => (
-    <div className="bg-white/4 border border-white/10 rounded-2xl p-5">
+    <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5">
       <div className="flex items-center justify-between mb-4">
-        <span className="text-violet-400 text-sm font-bold">{label || `#${index + 1} гишүүн`}</span>
+        <span className="text-blue-600 text-sm font-bold">{label || `#${index + 1} гишүүн`}</span>
         {!isSoft && members.length > minMembers && (
           <button type="button" onClick={() => setMembers(p => p.filter((_, i) => i !== index))}
-            className="text-gray-600 hover:text-red-400 p-1 rounded-lg transition-colors">
+            className="text-slate-400 hover:text-red-500 p-1 rounded-lg transition-colors">
             <Trash2 className="w-4 h-4" />
           </button>
         )}
@@ -143,14 +143,14 @@ export default function RegisterPage() {
         <InputField label="Нас" value={member.age} onChange={(v) => onUpdate(index, 'age', v)} type="number" placeholder="25" required />
         {!isSoft && (
           <div>
-            <label className="block text-gray-300 text-sm font-medium mb-1.5">Хүйс <span className="text-violet-400">*</span></label>
+            <label className="block text-slate-600 text-sm font-medium mb-1.5">Хүйс <span className="text-blue-500">*</span></label>
             <div className="relative">
               <select value={member.gender} onChange={(e) => onUpdate(index, 'gender', e.target.value)}
-                className="w-full bg-white/6 border border-white/12 focus:border-violet-500/70 rounded-xl px-4 py-3 text-white outline-none text-sm appearance-none cursor-pointer">
-                <option value="male" className="bg-gray-900">Эрэгтэй</option>
-                <option value="female" className="bg-gray-900">Эмэгтэй</option>
+                className="w-full bg-white border border-slate-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 rounded-xl px-4 py-3 text-slate-800 outline-none text-sm appearance-none cursor-pointer">
+                <option value="male">Эрэгтэй</option>
+                <option value="female">Эмэгтэй</option>
               </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
             </div>
           </div>
         )}
@@ -161,14 +161,14 @@ export default function RegisterPage() {
   if (success) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
-        <div className="text-center max-w-md bounce-in">
-          <div className="w-24 h-24 bg-green-500/15 border border-green-500/30 rounded-3xl flex items-center justify-center mx-auto mb-6 float-anim">
-            <CheckCircle className="w-12 h-12 text-green-400" />
+        <div className="text-center max-w-md bounce-in bg-white rounded-3xl p-10 shadow-xl shadow-blue-100/50 border border-blue-100">
+          <div className="w-24 h-24 bg-green-50 border border-green-200 rounded-3xl flex items-center justify-center mx-auto mb-6 float-anim">
+            <CheckCircle className="w-12 h-12 text-green-500" />
           </div>
-          <h1 className="text-3xl font-black text-white mb-3">Амжилттай бүртгэгдлээ!</h1>
-          <p className="text-gray-400 mb-8">Таны багийн бүртгэл хүлээн авагдлаа. Админ баталгаажуулсны дараа харагдана.</p>
+          <h1 className="text-3xl font-black text-slate-800 mb-3">Амжилттай бүртгэгдлээ!</h1>
+          <p className="text-slate-500 mb-8">Таны багийн бүртгэл хүлээн авагдлаа. Админ баталгаажуулсны дараа харагдана.</p>
           <button onClick={resetForm}
-            className="bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white font-bold px-8 py-3 rounded-2xl transition-all hover:scale-105 shadow-lg shadow-violet-600/30">
+            className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-bold px-8 py-3 rounded-2xl transition-all hover:scale-105 shadow-lg shadow-blue-200">
             Дахин бүртгүүлэх
           </button>
         </div>
@@ -180,22 +180,22 @@ export default function RegisterPage() {
     <div className="min-h-screen px-4 py-12">
       <div className="max-w-3xl mx-auto">
         <div className="mb-10 slide-up">
-          <h1 className="text-4xl font-black text-white mb-2">Баг бүртгүүлэх</h1>
-          <p className="text-gray-400">Тэмцээний төрлөө сонгоод бүх талбарыг бөглөнө үү.</p>
+          <h1 className="text-4xl font-black text-slate-800 mb-2">Баг бүртгүүлэх</h1>
+          <p className="text-slate-500">Тэмцээний төрлөө сонгоод бүх талбарыг бөглөнө үү.</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Category */}
-          <div className="bg-white/5 border border-white/10 rounded-3xl p-6">
-            <h2 className="text-white font-bold text-lg mb-4">Тэмцээний төрөл</h2>
+          <div className="bg-white shadow-lg shadow-blue-100/50 border border-blue-100/80 rounded-3xl p-6">
+            <h2 className="text-slate-800 font-bold text-lg mb-4">Тэмцээний төрөл</h2>
             <div className="grid grid-cols-2 gap-3">
               {CATEGORIES.map((cat, i) => (
                 <button key={cat.key} type="button" onClick={() => handleCategoryChange(cat.key)}
                   style={{ animationDelay: `${i * 0.08}s` }}
                   className={`bounce-in flex flex-col items-center justify-center p-5 rounded-2xl border-2 transition-all duration-200 ${
                     category === cat.key
-                      ? `border-violet-500 bg-gradient-to-br ${cat.color} bg-opacity-20 text-white shadow-lg`
-                      : 'border-white/10 bg-white/3 text-gray-400 hover:border-white/25 hover:text-white hover:scale-105'
+                      ? `${cat.borderColor} ${cat.bgColor} text-slate-800 shadow-md`
+                      : 'border-slate-200 bg-white text-slate-500 hover:border-blue-200 hover:bg-blue-50/50 hover:scale-105'
                   }`}>
                   <span className="text-2xl mb-2">{cat.icon}</span>
                   <span className="font-bold text-sm text-center">{cat.label}</span>
@@ -206,8 +206,8 @@ export default function RegisterPage() {
           </div>
 
           {/* Team info */}
-          <div className="bg-white/5 border border-white/10 rounded-3xl p-6 space-y-4">
-            <h2 className="text-white font-bold text-lg">Багийн мэдээлэл</h2>
+          <div className="bg-white shadow-lg shadow-blue-100/50 border border-blue-100/80 rounded-3xl p-6 space-y-4">
+            <h2 className="text-slate-800 font-bold text-lg">Багийн мэдээлэл</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <InputField label="Багийн нэр" value={teamName} onChange={setTeamName} placeholder="Баг нэр" required />
               <InputField label="Сургуулийн нэр" value={school} onChange={setSchool} placeholder="Сургуулийн нэр" required />
@@ -217,20 +217,20 @@ export default function RegisterPage() {
           </div>
 
           {/* Members */}
-          <div className="bg-white/5 border border-white/10 rounded-3xl p-6">
+          <div className="bg-white shadow-lg shadow-blue-100/50 border border-blue-100/80 rounded-3xl p-6">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="text-white font-bold text-lg">Гишүүдийн мэдээлэл</h2>
+                <h2 className="text-slate-800 font-bold text-lg">Гишүүдийн мэдээлэл</h2>
                 {!isSoft && (
-                  <p className="text-gray-500 text-sm mt-0.5">
+                  <p className="text-slate-500 text-sm mt-0.5">
                     {members.length}/{maxMembers} гишүүн
-                    {members.length < minMembers && <span className="text-red-400"> (хамгийн багадаа {minMembers})</span>}
+                    {members.length < minMembers && <span className="text-red-500"> (хамгийн багадаа {minMembers})</span>}
                   </p>
                 )}
               </div>
               {!isSoft && members.length < maxMembers && (
                 <button type="button" onClick={() => setMembers(p => [...p, emptyMember()])}
-                  className="flex items-center gap-2 bg-violet-600/20 hover:bg-violet-600/30 border border-violet-500/30 text-violet-300 text-sm font-semibold px-4 py-2 rounded-xl transition-all hover:scale-105">
+                  className="flex items-center gap-2 bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-600 text-sm font-semibold px-4 py-2 rounded-xl transition-all hover:scale-105">
                   <Plus className="w-4 h-4" />
                   Нэмэх
                 </button>
@@ -241,8 +241,8 @@ export default function RegisterPage() {
               <div className="space-y-6">
                 <div>
                   <div className="flex items-center gap-2 mb-3">
-                    <div className="w-2 h-2 rounded-full bg-blue-400"></div>
-                    <h3 className="text-blue-300 font-bold">Эрэгтэй тоглогчид (3)</h3>
+                    <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                    <h3 className="text-blue-600 font-bold">Эрэгтэй тоглогчид (3)</h3>
                   </div>
                   <div className="space-y-3">
                     {softMale.map((m, i) => (
@@ -252,10 +252,10 @@ export default function RegisterPage() {
                     ))}
                   </div>
                 </div>
-                <div className="border-t border-white/10 pt-6">
+                <div className="border-t border-slate-100 pt-6">
                   <div className="flex items-center gap-2 mb-3">
-                    <div className="w-2 h-2 rounded-full bg-pink-400"></div>
-                    <h3 className="text-pink-300 font-bold">Эмэгтэй тоглогчид (3)</h3>
+                    <div className="w-2 h-2 rounded-full bg-pink-500"></div>
+                    <h3 className="text-pink-600 font-bold">Эмэгтэй тоглогчид (3)</h3>
                   </div>
                   <div className="space-y-3">
                     {softFemale.map((m, i) => (
@@ -276,14 +276,14 @@ export default function RegisterPage() {
           </div>
 
           {error && (
-            <div className="flex items-center gap-3 bg-red-500/10 border border-red-500/30 rounded-2xl p-4 text-red-300">
+            <div className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-2xl p-4 text-red-600">
               <AlertCircle className="w-5 h-5 shrink-0" />
               {error}
             </div>
           )}
 
           <button type="submit" disabled={submitting || (!isSoft && members.length < minMembers)}
-            className="w-full bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-black py-4 rounded-2xl transition-all duration-200 shadow-lg shadow-violet-600/30 hover:shadow-violet-600/50 hover:scale-[1.01] text-lg">
+            className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 disabled:opacity-40 disabled:cursor-not-allowed text-white font-black py-4 rounded-2xl transition-all duration-200 shadow-lg shadow-blue-200 hover:shadow-blue-300 hover:scale-[1.01] text-lg">
             {submitting ? '⏳ Бүртгэж байна...' : '🏐 Баг бүртгүүлэх'}
           </button>
         </form>

@@ -23,7 +23,7 @@ export default function ImageSlider({ images }: { images: string[] }) {
   if (!images || images.length === 0) return null;
 
   return (
-    <div className="relative rounded-3xl overflow-hidden border border-white/10 shadow-2xl shadow-black/40 group">
+    <div className="relative rounded-3xl overflow-hidden border border-blue-100 shadow-xl shadow-blue-100/50 group">
       {/* Image */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
@@ -37,13 +37,13 @@ export default function ImageSlider({ images }: { images: string[] }) {
         <>
           <button
             onClick={prev}
-            className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm"
+            className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-slate-700 rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm shadow-md"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
           <button
             onClick={next}
-            className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm"
+            className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-slate-700 rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm shadow-md"
           >
             <ChevronRight className="w-5 h-5" />
           </button>
@@ -59,8 +59,8 @@ export default function ImageSlider({ images }: { images: string[] }) {
               onClick={() => setCurrent(i)}
               className={`rounded-full transition-all duration-300 ${
                 i === current
-                  ? 'w-5 h-2 bg-amber-400'
-                  : 'w-2 h-2 bg-white/40 hover:bg-white/60'
+                  ? 'w-5 h-2 bg-blue-500'
+                  : 'w-2 h-2 bg-white/70 hover:bg-white'
               }`}
             />
           ))}
