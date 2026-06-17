@@ -25,12 +25,18 @@ export async function PUT(req: NextRequest) {
     }
 
     const body = await req.json();
-    let tournament = await Tournament.findOne();
+    // Only allow updating non-array fields via PUT; images managed via /api/upload
+    const allowedFields = ['title', 'description', 'date', 'location', 'registrationDeadline', 'prizeInfo'];
+    const update: Record<string, string> = {};
+    for (const key of allowedFields) {
+      if (key in body) update[key] = body[key];
+    }
 
+    let tournament = await Tournament.findOne();
     if (!tournament) {
-      tournament = await Tournament.create(body);
+      tournament = await Tournament.create(update);
     } else {
-      tournament = await Tournament.findByIdAndUpdate(tournament._id, body, { new: true });
+      tournament = await Tournament.findByIdAndUpdate(tournament._id, update, { new: true });
     }
 
     return NextResponse.json({ success: true, data: tournament });

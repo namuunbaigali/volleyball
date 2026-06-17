@@ -18,6 +18,7 @@ export interface ITeam extends Document {
   contactEmail: string;
   members: IMember[];
   status: 'pending' | 'approved' | 'rejected';
+  tournamentType: 'volleyball' | 'soft_volleyball';
   createdAt: Date;
 }
 
@@ -38,11 +39,21 @@ const TeamSchema = new Schema<ITeam>(
     school: { type: String, required: true },
     contactPhone: { type: String, required: true },
     contactEmail: { type: String, required: true },
+    tournamentType: {
+      type: String,
+      enum: ['volleyball', 'soft_volleyball'],
+      default: 'volleyball',
+    },
     members: {
       type: [MemberSchema],
       validate: {
-        validator: (v: IMember[]) => v.length >= 6 && v.length <= 12,
-        message: 'Багт 6-12 гишүүн байх ёстой',
+        validator: function (this: ITeam, v: IMember[]) {
+          if (this.tournamentType === 'soft_volleyball') {
+            return v.length >= 3 && v.length <= 6;
+          }
+          return v.length >= 6 && v.length <= 12;
+        },
+        message: 'Гишүүний тоо буруу байна',
       },
     },
     status: {

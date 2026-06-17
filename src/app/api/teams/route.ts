@@ -7,10 +7,14 @@ export async function GET(req: NextRequest) {
     await connectDB();
     const { searchParams } = new URL(req.url);
     const gender = searchParams.get('gender');
+    const tournamentType = searchParams.get('tournamentType');
 
-    const query = gender ? { teamGender: gender, status: 'approved' } : { status: 'approved' };
-    const teams = await Team.find(query).select(
-      'teamName teamGender school members.firstName members.lastName members.graduationYear status createdAt'
+    const baseQuery: Record<string, unknown> = { status: { $ne: 'rejected' } };
+    if (gender) baseQuery.teamGender = gender;
+    if (tournamentType) baseQuery.tournamentType = tournamentType;
+
+    const teams = await Team.find(baseQuery).select(
+      'teamName teamGender school members.firstName members.lastName members.graduationYear status tournamentType createdAt'
     );
 
     return NextResponse.json({ success: true, data: teams });
@@ -24,15 +28,24 @@ export async function POST(req: NextRequest) {
     await connectDB();
     const body = await req.json();
 
-    const { teamName, teamGender, school, contactPhone, contactEmail, members } = body;
+    const { teamName, teamGender, school, contactPhone, contactEmail, members, tournamentType } = body;
 
     if (!teamName || !teamGender || !school || !contactPhone || !contactEmail || !members) {
       return NextResponse.json({ success: false, error: 'Бүх талбарыг бөглөнө үү' }, { status: 400 });
     }
 
-    if (members.length < 6 || members.length > 12) {
+    const isSoft = tournamentType === 'soft_volleyball';
+    const minMembers = isSoft ? 3 : 6;
+    const maxMembers = isSoft ? 6 : 12;
+
+    if (members.length < minMembers || members.length > maxMembers) {
       return NextResponse.json(
-        { success: false, error: 'Багт 6-12 гишүүн байх ёстой' },
+        {
+          success: false,
+          error: isSoft
+            ? 'Софт волейболд 3-6 гишүүн байх ёстой'
+            : 'Багт 6-12 гишүүн байх ёстой',
+        },
         { status: 400 }
       );
     }
@@ -52,6 +65,7 @@ export async function POST(req: NextRequest) {
       contactPhone,
       contactEmail,
       members,
+      tournamentType: tournamentType || 'volleyball',
       status: 'pending',
     });
 
