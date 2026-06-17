@@ -44,40 +44,37 @@ export default async function HomePage() {
       {/* Hero */}
       <section className="relative overflow-hidden pt-16 pb-24 px-4">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-32 -left-32 w-96 h-96 bg-red-800/20 rounded-full blur-3xl" />
-          <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-amber-700/15 rounded-full blur-3xl" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-red-900/5 rounded-full blur-3xl" />
-          {/* Geometric border accents */}
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
-          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-red-700/20 to-transparent" />
+          <div className="absolute top-0 right-0 w-72 h-72 bg-blue-200/40 rounded-full blur-3xl -z-10" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-pink-200/30 rounded-full blur-3xl -z-10" />
+          <div className="absolute top-1/3 left-1/3 w-96 h-96 bg-indigo-100/50 rounded-full blur-3xl -z-10" />
         </div>
 
         <div className="relative max-w-5xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 bg-red-800/20 border border-red-700/30 rounded-full px-4 py-1.5 text-red-300 text-sm font-medium mb-8">
+          <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-full px-4 py-1.5 text-blue-600 text-sm font-medium mb-8">
             <Zap className="w-3.5 h-3.5" />
             Бүртгэл нээлттэй байна
           </div>
 
           <h1 className="text-4xl sm:text-5xl md:text-7xl font-black tracking-tight mb-6 leading-tight">
-            <span className="text-white">{title.split(' ').slice(0, -1).join(' ')} </span>
+            <span className="text-slate-800">{title.split(' ').slice(0, -1).join(' ')} </span>
             <span className="shimmer-text">{title.split(' ').slice(-1)[0]}</span>
           </h1>
 
-          <p className="text-gray-400 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
+          <p className="text-slate-500 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
             {description}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
             <Link
               href="/register"
-              className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 text-white font-semibold px-8 py-4 rounded-2xl transition-all duration-200 shadow-lg shadow-red-700/30 hover:shadow-red-600/50 hover:-translate-y-0.5"
+              className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-semibold px-8 py-4 rounded-2xl transition-all duration-200 shadow-lg shadow-blue-300/50 hover:shadow-blue-400/60 hover:-translate-y-0.5"
             >
               Баг бүртгүүлэх
               <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
               href="/teams"
-              className="inline-flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/15 hover:border-amber-500/30 text-white font-semibold px-8 py-4 rounded-2xl transition-all duration-200 hover:-translate-y-0.5"
+              className="inline-flex items-center justify-center gap-2 bg-white border-2 border-blue-200 hover:border-blue-300 text-blue-600 font-semibold px-8 py-4 rounded-2xl transition-all duration-200 hover:-translate-y-0.5 shadow-sm"
             >
               <Users className="w-4 h-4" />
               Бүртгэгдсэн багууд
@@ -93,28 +90,28 @@ export default async function HomePage() {
             ].map((item, i) => (
               <div
                 key={i}
-                className="bg-white/5 border border-white/10 rounded-2xl p-5 text-left hover:border-amber-500/30 transition-colors"
+                className="bg-white shadow-lg shadow-blue-100/50 border border-blue-100/80 rounded-2xl p-5 text-left hover:border-blue-200 transition-all hover:shadow-blue-200/60"
               >
-                <item.icon className="w-5 h-5 text-amber-400 mb-3" />
-                <p className="text-gray-500 text-xs font-medium uppercase tracking-wider mb-1">
+                <item.icon className="w-5 h-5 text-blue-500 mb-3" />
+                <p className="text-slate-400 text-xs font-medium uppercase tracking-wider mb-1">
                   {item.label}
                 </p>
-                <p className="text-white font-semibold">{item.value}</p>
+                <p className="text-slate-800 font-semibold">{item.value}</p>
               </div>
             ))}
           </div>
 
           {prizeInfo && (
-            <div className="mt-4 bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20 rounded-2xl p-5 max-w-3xl mx-auto text-left">
-              <p className="text-amber-400 text-xs font-semibold uppercase tracking-wider mb-1">Шагнал</p>
-              <p className="text-white">{prizeInfo}</p>
+            <div className="mt-4 bg-amber-50 border border-amber-200 rounded-2xl p-5 max-w-3xl mx-auto text-left">
+              <p className="text-amber-600 text-xs font-semibold uppercase tracking-wider mb-1">Шагнал</p>
+              <p className="text-slate-700">{prizeInfo}</p>
             </div>
           )}
 
           {/* Countdown */}
           {deadline && (
             <div className="mt-8 max-w-3xl mx-auto">
-              <p className="text-gray-500 text-sm font-medium mb-4 uppercase tracking-wider">Бүртгэл дуусах хүртэл</p>
+              <p className="text-slate-400 text-sm font-medium mb-4 uppercase tracking-wider">Бүртгэл дуусах хүртэл</p>
               <Countdown deadline={deadline} />
             </div>
           )}
@@ -125,7 +122,7 @@ export default async function HomePage() {
       {posterUrls.length > 0 && (
         <section className="px-4 pb-16">
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-white text-2xl font-bold mb-6 text-center">Тэмцээний зар</h2>
+            <h2 className="text-slate-800 text-2xl font-bold mb-6 text-center">Тэмцээний зар</h2>
             <ImageSlider images={posterUrls} />
           </div>
         </section>
@@ -135,7 +132,7 @@ export default async function HomePage() {
       {scheduleUrls.length > 0 && (
         <section className="px-4 pb-24">
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-white text-2xl font-bold mb-6 text-center">Тоглолтын хуваарь</h2>
+            <h2 className="text-slate-800 text-2xl font-bold mb-6 text-center">Тоглолтын хуваарь</h2>
             <ImageSlider images={scheduleUrls} />
           </div>
         </section>
@@ -144,19 +141,18 @@ export default async function HomePage() {
       {/* CTA */}
       <section className="px-4 pb-24">
         <div className="max-w-4xl mx-auto">
-          <div className="relative bg-gradient-to-r from-red-900/40 to-amber-900/20 border border-red-700/20 rounded-3xl p-10 text-center overflow-hidden">
-            {/* Geometric top border accent */}
-            <div className="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-amber-500/40 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-br from-red-800/5 to-transparent" />
+          <div className="relative bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl p-10 text-center overflow-hidden shadow-xl shadow-blue-200">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-indigo-400/20 rounded-full blur-3xl" />
             <div className="relative">
-              <Trophy className="w-12 h-12 text-amber-400 mx-auto mb-4" />
+              <Trophy className="w-12 h-12 text-white/80 mx-auto mb-4" />
               <h2 className="text-3xl font-black text-white mb-3">Оролцоход бэлэн үү?</h2>
-              <p className="text-gray-400 mb-8 max-w-lg mx-auto">
+              <p className="text-blue-100 mb-8 max-w-lg mx-auto">
                 Волейболд 6-12, Софт волейболд 3-6 гишүүнтэй баг бүртгүүлэн тэмцээнд оролцоорой. Эрэгтэй болон эмэгтэй ангилал тус бүрт нэгдсэн байдлаар оролцох боломжтой.
               </p>
               <Link
                 href="/register"
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-red-700 to-amber-600 hover:from-red-600 hover:to-amber-500 text-white font-bold px-10 py-4 rounded-2xl transition-all duration-200 shadow-lg shadow-red-700/30 hover:shadow-red-600/50 hover:-translate-y-0.5"
+                className="inline-flex items-center gap-2 bg-white hover:bg-blue-50 text-blue-600 font-bold px-10 py-4 rounded-2xl transition-all duration-200 shadow-lg hover:-translate-y-0.5"
               >
                 Одоо бүртгүүлэх
                 <ArrowRight className="w-4 h-4" />

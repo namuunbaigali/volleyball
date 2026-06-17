@@ -19,10 +19,10 @@ interface IMatch {
 }
 
 const STATUS_CONFIG = {
-  scheduled: { label: 'Товлогдсон', color: 'text-blue-300 bg-blue-500/15 border-blue-500/30', icon: Calendar },
-  playing: { label: 'Тоглаж байна', color: 'text-green-300 bg-green-500/15 border-green-500/30', icon: Play },
-  done: { label: 'Дууссан', color: 'text-gray-400 bg-gray-500/10 border-gray-500/20', icon: CheckCircle },
-  delayed: { label: 'Хойшлогдсон', color: 'text-orange-300 bg-orange-500/15 border-orange-500/30', icon: AlertTriangle },
+  scheduled: { label: 'Товлогдсон', color: 'text-blue-600 bg-blue-50 border-blue-200', icon: Calendar },
+  playing: { label: 'Тоглаж байна', color: 'text-red-600 bg-red-50 border-red-200', icon: Play },
+  done: { label: 'Дууссан', color: 'text-slate-500 bg-slate-100 border-slate-200', icon: CheckCircle },
+  delayed: { label: 'Хойшлогдсон', color: 'text-orange-600 bg-orange-50 border-orange-200', icon: AlertTriangle },
 };
 
 function formatTime(iso: string) {
@@ -50,8 +50,8 @@ export default function SchedulePage() {
     <div className="min-h-screen px-4 py-12">
       <div className="max-w-4xl mx-auto">
         <div className="mb-10 slide-up">
-          <h1 className="text-4xl font-black text-white mb-2">Тоглолтын хуваарь</h1>
-          <p className="text-gray-400">Тэмцээний бүх тоглолтын хуваарь</p>
+          <h1 className="text-4xl font-black text-slate-800 mb-2">Тоглолтын хуваарь</h1>
+          <p className="text-slate-500">Тэмцээний бүх тоглолтын хуваарь</p>
         </div>
 
         {/* Category tabs */}
@@ -61,8 +61,8 @@ export default function SchedulePage() {
               <button key={cat} onClick={() => setActiveCategory(cat)}
                 className={`px-4 py-2 rounded-xl text-sm font-bold transition-all hover:scale-105 ${
                   activeCategory === cat
-                    ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-lg shadow-violet-600/30'
-                    : 'bg-white/6 border border-white/10 text-gray-400 hover:text-white'
+                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-200'
+                    : 'bg-white border border-slate-200 text-slate-500 hover:text-slate-700 shadow-sm'
                 }`}>
                 {cat}
               </button>
@@ -73,14 +73,14 @@ export default function SchedulePage() {
         {loading ? (
           <div className="space-y-4">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="bg-white/5 border border-white/5 rounded-2xl h-28 animate-pulse" />
+              <div key={i} className="bg-white border border-blue-50 rounded-2xl h-28 animate-pulse" />
             ))}
           </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-24 fade-in">
-            <Calendar className="w-16 h-16 text-gray-700 mx-auto mb-4" />
-            <p className="text-gray-500 text-lg">Тоглолтын хуваарь одоогоор байхгүй байна</p>
-            <p className="text-gray-600 text-sm mt-2">Удахгүй нэмэгдэх болно</p>
+            <Calendar className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+            <p className="text-slate-500 text-lg">Тоглолтын хуваарь одоогоор байхгүй байна</p>
+            <p className="text-slate-400 text-sm mt-2">Удахгүй нэмэгдэх болно</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -92,34 +92,31 @@ export default function SchedulePage() {
               const isDone = match.status === 'done';
 
               return (
-                <div key={match._id} className={`relative slide-up group ${isPlaying ? 'ring-1 ring-green-500/40' : ''}`}
+                <div key={match._id} className={`relative slide-up group ${isPlaying ? 'ring-2 ring-red-300' : ''}`}
                   style={{ animationDelay: `${i * 0.06}s` }}>
-                  {isPlaying && (
-                    <div className="absolute -inset-px rounded-2xl bg-gradient-to-r from-green-500/20 to-cyan-500/10 blur-sm" />
-                  )}
-                  <div className={`relative bg-white/5 border border-white/10 hover:border-violet-500/30 rounded-2xl p-5 transition-all ${isDone ? 'opacity-70' : ''}`}>
+                  <div className={`relative bg-white shadow-sm shadow-blue-50 border-l-4 ${isPlaying ? 'border-l-red-400' : 'border-l-blue-200'} border border-blue-100/80 hover:border-blue-200 rounded-2xl p-5 transition-all hover:shadow-md hover:shadow-blue-100/50 ${isDone ? 'opacity-70' : ''}`}>
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                       {/* Teams */}
                       <div className="flex items-center gap-3 flex-1">
                         <div className="text-center flex-1">
-                          <p className={`font-black text-lg leading-tight ${isDone ? 'text-gray-400' : 'text-white'}`}>
+                          <p className={`font-black text-lg leading-tight ${isDone ? 'text-slate-400' : 'text-slate-800'}`}>
                             {match.team1Name}
                           </p>
                           {isDone && match.score1 && (
-                            <p className="text-2xl font-black text-violet-400">{match.score1}</p>
+                            <p className="text-2xl font-black text-blue-600">{match.score1}</p>
                           )}
                         </div>
                         <div className={`shrink-0 text-center px-3 py-1.5 rounded-xl font-black text-sm ${
-                          isPlaying ? 'bg-green-500/20 text-green-300 pulse-glow' : 'bg-white/8 text-gray-400'
+                          isPlaying ? 'bg-red-100 text-red-600 pulse-glow' : 'bg-slate-100 text-slate-500'
                         }`}>
                           {isPlaying ? '🔴 LIVE' : 'VS'}
                         </div>
                         <div className="text-center flex-1">
-                          <p className={`font-black text-lg leading-tight ${isDone ? 'text-gray-400' : 'text-white'}`}>
+                          <p className={`font-black text-lg leading-tight ${isDone ? 'text-slate-400' : 'text-slate-800'}`}>
                             {match.team2Name}
                           </p>
                           {isDone && match.score2 && (
-                            <p className="text-2xl font-black text-violet-400">{match.score2}</p>
+                            <p className="text-2xl font-black text-blue-600">{match.score2}</p>
                           )}
                         </div>
                       </div>
@@ -130,7 +127,7 @@ export default function SchedulePage() {
                           <StatusIcon className="w-3.5 h-3.5" />
                           {cfg.label}
                         </span>
-                        <div className="flex items-center gap-3 text-xs text-gray-500">
+                        <div className="flex items-center gap-3 text-xs text-slate-400">
                           <span className="flex items-center gap-1">
                             <Clock className="w-3 h-3" />
                             {formatTime(match.scheduledTime)}
@@ -140,18 +137,18 @@ export default function SchedulePage() {
                             {match.court}
                           </span>
                         </div>
-                        <span className="text-xs text-gray-600 bg-white/5 px-2 py-0.5 rounded-lg">{match.category}</span>
+                        <span className="text-xs text-slate-500 bg-slate-100 px-2 py-0.5 rounded-lg">{match.category}</span>
                       </div>
                     </div>
 
                     {isDelayed && match.delayMinutes > 0 && (
-                      <div className="mt-3 flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 rounded-xl px-3 py-2 text-orange-300 text-xs">
+                      <div className="mt-3 flex items-center gap-2 bg-orange-50 border border-orange-200 rounded-xl px-3 py-2 text-orange-600 text-xs">
                         <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
                         <span><strong>{match.delayMinutes} минутаар</strong> хойшлогдсон</span>
                       </div>
                     )}
                     {match.note && (
-                      <p className="mt-2 text-xs text-gray-500 italic">{match.note}</p>
+                      <p className="mt-2 text-xs text-slate-400 italic">{match.note}</p>
                     )}
                   </div>
                 </div>

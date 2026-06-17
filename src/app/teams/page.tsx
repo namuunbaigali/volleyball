@@ -62,25 +62,25 @@ export default function TeamsPage() {
     <div className="min-h-screen px-4 py-12">
       <div className="max-w-6xl mx-auto">
         <div className="mb-10 slide-up">
-          <h1 className="text-4xl font-black text-white mb-2">Бүртгэгдсэн багууд</h1>
-          <p className="text-gray-400">
-            Нийт <span className="text-violet-400 font-bold text-lg">{teams.length}</span> баг бүртгэгдсэн
+          <h1 className="text-4xl font-black text-slate-800 mb-2">Бүртгэгдсэн багууд</h1>
+          <p className="text-slate-500">
+            Нийт <span className="text-blue-600 font-bold text-lg">{teams.length}</span> баг бүртгэгдсэн
           </p>
         </div>
 
         {/* Search row */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input type="text" placeholder="Баг, сургуулиар хайх..." value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full bg-white/6 border border-white/12 focus:border-violet-500/50 rounded-2xl pl-11 pr-4 py-3.5 text-white placeholder-gray-500 outline-none transition-colors" />
+              className="w-full bg-white border border-slate-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 rounded-2xl pl-11 pr-4 py-3.5 text-slate-800 placeholder-slate-400 outline-none transition-all shadow-sm" />
           </div>
           <div className="relative">
-            <Hash className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+            <Hash className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input type="number" placeholder="Төгсөлтийн оноор хайх (жш: 2020)" value={gradYear}
               onChange={e => setGradYear(e.target.value)}
-              className="w-full bg-white/6 border border-white/12 focus:border-amber-500/50 rounded-2xl pl-11 pr-4 py-3.5 text-white placeholder-gray-500 outline-none transition-colors" />
+              className="w-full bg-white border border-slate-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 rounded-2xl pl-11 pr-4 py-3.5 text-slate-800 placeholder-slate-400 outline-none transition-all shadow-sm" />
           </div>
         </div>
 
@@ -92,12 +92,12 @@ export default function TeamsPage() {
               <button key={t.key} onClick={() => setTab(t.key)}
                 className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 hover:scale-105 ${
                   tab === t.key
-                    ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-lg shadow-violet-600/30'
-                    : 'bg-white/6 border border-white/10 text-gray-400 hover:text-white hover:border-white/20'
+                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-200'
+                    : 'bg-white border border-slate-200 text-slate-500 hover:text-slate-700 hover:border-blue-200 shadow-sm'
                 }`}>
                 <span>{t.icon}</span>
                 {t.label}
-                <span className={`text-xs px-1.5 py-0.5 rounded-full font-semibold ${tab === t.key ? 'bg-white/25' : 'bg-white/8'}`}>
+                <span className={`text-xs px-1.5 py-0.5 rounded-full font-semibold ${tab === t.key ? 'bg-white/25' : 'bg-slate-100'}`}>
                   {count}
                 </span>
               </button>
@@ -108,13 +108,13 @@ export default function TeamsPage() {
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="bg-white/5 border border-white/5 rounded-2xl p-5 h-44 animate-pulse" />
+              <div key={i} className="bg-white border border-blue-50 rounded-2xl p-5 h-44 animate-pulse" />
             ))}
           </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-24 fade-in">
-            <Users className="w-16 h-16 text-gray-700 mx-auto mb-4" />
-            <p className="text-gray-500 text-lg">
+            <Users className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+            <p className="text-slate-500 text-lg">
               {search || gradYear ? 'Хайлтад тохирох баг олдсонгүй' : 'Одоогоор бүртгэгдсэн баг байхгүй байна'}
             </p>
           </div>
