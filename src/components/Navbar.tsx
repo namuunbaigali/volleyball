@@ -17,14 +17,14 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl shadow-sm border-b border-blue-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-200">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16">
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:shadow-blue-500/50 transition-all group-hover:scale-110">
-              <Trophy className="w-5 h-5 text-white" />
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
+              <Trophy className="w-4 h-4 text-white" />
             </div>
-            <span className="text-slate-800 font-black text-lg tracking-tight">
+            <span className="text-slate-800 font-bold text-base">
               Volley<span className="text-blue-600">Ball</span>
             </span>
           </Link>
@@ -34,10 +34,10 @@ export default function Navbar() {
               <Link
                 key={l.href}
                 href={l.href}
-                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   pathname === l.href
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-200'
-                    : 'text-slate-600 hover:text-slate-800 hover:bg-blue-50'
+                    ? 'bg-blue-600 text-white'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`}
               >
                 {l.href === '/register' ? (
@@ -54,7 +54,7 @@ export default function Navbar() {
           </div>
 
           <button
-            className="md:hidden text-slate-600 hover:text-slate-800 p-2 rounded-xl hover:bg-blue-50 transition"
+            className="md:hidden text-slate-600 p-2 rounded-lg hover:bg-slate-100 transition"
             onClick={() => setOpen(!open)}
           >
             {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -63,16 +63,16 @@ export default function Navbar() {
       </div>
 
       {open && (
-        <div className="md:hidden bg-white border-t border-blue-100 px-4 py-3 space-y-1 shadow-lg">
+        <div className="md:hidden bg-white border-t border-slate-200 px-4 py-3 space-y-1">
           {links.map((l) => (
             <Link
               key={l.href}
               href={l.href}
               onClick={() => setOpen(false)}
-              className={`block px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
+              className={`block px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                 pathname === l.href
-                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white'
-                  : 'text-slate-600 hover:text-slate-800 hover:bg-blue-50'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
               {l.label}

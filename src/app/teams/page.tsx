@@ -59,7 +59,7 @@ export default function TeamsPage() {
   });
 
   return (
-    <div className="min-h-screen px-4 py-12">
+    <div className="min-h-screen bg-white px-4 py-12">
       <div className="max-w-6xl mx-auto">
         <div className="mb-10 slide-up">
           <h1 className="text-4xl font-black text-slate-800 mb-2">Бүртгэгдсэн багууд</h1>
@@ -92,8 +92,8 @@ export default function TeamsPage() {
               <button key={t.key} onClick={() => setTab(t.key)}
                 className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 hover:scale-105 ${
                   tab === t.key
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-200'
-                    : 'bg-white border border-slate-200 text-slate-500 hover:text-slate-700 hover:border-blue-200 shadow-sm'
+                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-white'
+                    : 'bg-white border border-slate-200 text-slate-500 hover:text-slate-700 hover:border-blue-200'
                 }`}>
                 <span>{t.icon}</span>
                 {t.label}

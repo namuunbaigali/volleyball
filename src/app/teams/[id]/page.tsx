@@ -38,7 +38,7 @@ export default async function TeamDetailPage({ params }: { params: Promise<{ id:
   if (!team || team.status !== 'approved') notFound();
 
   return (
-    <div className="min-h-screen px-4 py-12">
+    <div className="min-h-screen bg-white px-4 py-12">
       <div className="max-w-4xl mx-auto">
         <Link
           href="/teams"
@@ -49,9 +49,8 @@ export default async function TeamDetailPage({ params }: { params: Promise<{ id:
         </Link>
 
         {/* Team header */}
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl p-8 mb-6 shadow-xl shadow-blue-200/50 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
-          <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="bg-blue-600 rounded-2xl p-8 mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-3 mb-2">
                 <h1 className="text-3xl font-black text-white">{team.teamName}</h1>
@@ -105,7 +104,7 @@ export default async function TeamDetailPage({ params }: { params: Promise<{ id:
             {team.members.map((m, i) => (
               <div
                 key={i}
-                className="bg-white border border-blue-100/80 hover:border-blue-200 rounded-2xl p-5 transition-all shadow-sm hover:shadow-md hover:shadow-blue-100/50"
+                className="bg-white border border-slate-200 hover:border-slate-300 rounded-xl p-5 transition-colors"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">

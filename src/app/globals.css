@@ -1,8 +1,15 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f0f5ff;
-  --foreground: #1e293b;
+  --background: #ffffff;
+  --foreground: #0f172a;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #ffffff;
+    --foreground: #0f172a;
+  }
 }
 
 @theme inline {
@@ -12,9 +19,9 @@
   --font-mono: var(--font-geist-mono);
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
+html, body {
+  background: #ffffff !important;
+  color: #0f172a;
   font-family: 'Inter', system-ui, sans-serif;
 }
 
@@ -22,58 +29,20 @@ body {
 
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(59,130,246,0.35); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(59,130,246,0.6); }
-
-@keyframes blob-float {
-  0%, 100% { transform: translateY(0px) scale(1); }
-  50% { transform: translateY(-16px) scale(1.04); }
-}
-.blob { animation: blob-float 7s ease-in-out infinite; }
-
-@keyframes shimmer {
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
-}
-.shimmer-text {
-  background: linear-gradient(90deg, #2563eb, #f43f5e, #7c3aed, #2563eb);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: shimmer 3s linear infinite;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-}
-.float-anim { animation: float 4s ease-in-out infinite; }
-
-@keyframes pulse-glow {
-  0%, 100% { opacity: 0.8; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.05); }
-}
-.pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
 @keyframes slide-up {
-  from { opacity: 0; transform: translateY(24px); }
+  from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
-.slide-up { animation: slide-up 0.5s ease-out forwards; }
+.slide-up { animation: slide-up 0.4s ease-out forwards; }
 
 @keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
 }
-.fade-in { animation: fade-in 0.5s ease-out forwards; }
-
-@keyframes bounce-in {
-  0% { opacity: 0; transform: scale(0.85); }
-  60% { transform: scale(1.04); }
-  100% { opacity: 1; transform: scale(1); }
-}
-.bounce-in { animation: bounce-in 0.5s ease-out forwards; }
+.fade-in { animation: fade-in 0.4s ease-out forwards; }
 
 @keyframes ping-slow {
   0% { transform: scale(1); opacity: 1; }
@@ -81,48 +50,15 @@ body {
 }
 .ping-slow { animation: ping-slow 2s cubic-bezier(0,0,0.2,1) infinite; }
 
-/* Card component */
-.card {
-  background: white;
-  border-radius: 1.5rem;
-  box-shadow: 0 4px 24px rgba(59,130,246,0.08);
-  border: 1px solid rgba(59,130,246,0.12);
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
 }
-
-/* Button components */
-.btn-primary {
-  background: linear-gradient(to right, #2563eb, #3b82f6);
-  color: white;
-  font-weight: 700;
-  border-radius: 1rem;
-  padding: 0.75rem 2rem;
-  transition: all 0.2s;
-  box-shadow: 0 4px 14px rgba(37,99,235,0.25);
-}
-.btn-primary:hover {
-  background: linear-gradient(to right, #1d4ed8, #2563eb);
-  box-shadow: 0 6px 20px rgba(37,99,235,0.35);
-  transform: translateY(-1px);
-}
-
-.btn-secondary {
-  background: white;
-  color: #2563eb;
-  font-weight: 700;
-  border-radius: 1rem;
-  padding: 0.75rem 2rem;
-  border: 2px solid #bfdbfe;
-  transition: all 0.2s;
-}
-.btn-secondary:hover {
-  border-color: #93c5fd;
-  background: #eff6ff;
-  transform: translateY(-1px);
-}
-
-/* Glass card for light theme */
-.glass {
-  background: rgba(255,255,255,0.75);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(59,130,246,0.15);
+.shimmer-text {
+  background: linear-gradient(90deg, #2563eb, #6366f1, #2563eb);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 4s linear infinite;
 }

@@ -275,7 +275,7 @@ export default function AdminPage() {
 
   if (!token) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="min-h-screen bg-white flex items-center justify-center px-4">
         <div className="w-full max-w-sm bg-white rounded-3xl p-8 shadow-xl shadow-blue-100/50 border border-blue-100">
           <div className="text-center mb-8">
             <div className="w-16 h-16 bg-blue-50 border border-blue-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -308,7 +308,7 @@ export default function AdminPage() {
   const pendingTeams = teams.filter((t) => t.status === 'pending');
 
   return (
-    <div className="min-h-screen px-4 py-12">
+    <div className="min-h-screen bg-white px-4 py-12">
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <div>

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Calendar, MapPin, Trophy, Users, ArrowRight, Zap } from 'lucide-react';
+import { Calendar, MapPin, Trophy, Users, ArrowRight } from 'lucide-react';
 import connectDB from '@/lib/mongodb';
 import Tournament from '@/models/Tournament';
 import Countdown from '@/components/Countdown';
@@ -40,125 +40,102 @@ export default async function HomePage() {
   const scheduleUrls = (tournament?.schedules || []).map((s) => s.url);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-white">
       {/* Hero */}
-      <section className="relative overflow-hidden pt-16 pb-24 px-4">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-0 right-0 w-72 h-72 bg-blue-200/40 rounded-full blur-3xl -z-10" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-pink-200/30 rounded-full blur-3xl -z-10" />
-          <div className="absolute top-1/3 left-1/3 w-96 h-96 bg-indigo-100/50 rounded-full blur-3xl -z-10" />
+      <section className="px-4 pt-20 pb-24 max-w-5xl mx-auto text-center">
+        <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-full px-4 py-1.5 text-blue-600 text-sm font-medium mb-8">
+          <span className="relative flex h-2 w-2">
+            <span className="ping-slow absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+          </span>
+          Бүртгэл нээлттэй байна
         </div>
 
-        <div className="relative max-w-5xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-full px-4 py-1.5 text-blue-600 text-sm font-medium mb-8">
-            <Zap className="w-3.5 h-3.5" />
-            Бүртгэл нээлттэй байна
-          </div>
+        <h1 className="text-5xl sm:text-6xl md:text-7xl font-black tracking-tight mb-6 leading-tight">
+          <span className="text-slate-900">{title.split(' ').slice(0, -1).join(' ')} </span>
+          <span className="shimmer-text">{title.split(' ').slice(-1)[0]}</span>
+        </h1>
 
-          <h1 className="text-4xl sm:text-5xl md:text-7xl font-black tracking-tight mb-6 leading-tight">
-            <span className="text-slate-800">{title.split(' ').slice(0, -1).join(' ')} </span>
-            <span className="shimmer-text">{title.split(' ').slice(-1)[0]}</span>
-          </h1>
+        <p className="text-slate-500 text-lg max-w-xl mx-auto mb-10 leading-relaxed">
+          {description}
+        </p>
 
-          <p className="text-slate-500 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
-            {description}
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-            <Link
-              href="/register"
-              className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-semibold px-8 py-4 rounded-2xl transition-all duration-200 shadow-lg shadow-blue-300/50 hover:shadow-blue-400/60 hover:-translate-y-0.5"
-            >
-              Баг бүртгүүлэх
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-            <Link
-              href="/teams"
-              className="inline-flex items-center justify-center gap-2 bg-white border-2 border-blue-200 hover:border-blue-300 text-blue-600 font-semibold px-8 py-4 rounded-2xl transition-all duration-200 hover:-translate-y-0.5 shadow-sm"
-            >
-              <Users className="w-4 h-4" />
-              Бүртгэгдсэн багууд
-            </Link>
-          </div>
-
-          {/* Info cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
-            {[
-              { icon: Calendar, label: 'Тэмцээний огноо', value: date },
-              { icon: MapPin, label: 'Байршил', value: location },
-              { icon: Trophy, label: 'Бүртгэлийн дэдлайн', value: deadline || 'Тодорхойлогдоогүй' },
-            ].map((item, i) => (
-              <div
-                key={i}
-                className="bg-white shadow-lg shadow-blue-100/50 border border-blue-100/80 rounded-2xl p-5 text-left hover:border-blue-200 transition-all hover:shadow-blue-200/60"
-              >
-                <item.icon className="w-5 h-5 text-blue-500 mb-3" />
-                <p className="text-slate-400 text-xs font-medium uppercase tracking-wider mb-1">
-                  {item.label}
-                </p>
-                <p className="text-slate-800 font-semibold">{item.value}</p>
-              </div>
-            ))}
-          </div>
-
-          {prizeInfo && (
-            <div className="mt-4 bg-amber-50 border border-amber-200 rounded-2xl p-5 max-w-3xl mx-auto text-left">
-              <p className="text-amber-600 text-xs font-semibold uppercase tracking-wider mb-1">Шагнал</p>
-              <p className="text-slate-700">{prizeInfo}</p>
-            </div>
-          )}
-
-          {/* Countdown */}
-          {deadline && (
-            <div className="mt-8 max-w-3xl mx-auto">
-              <p className="text-slate-400 text-sm font-medium mb-4 uppercase tracking-wider">Бүртгэл дуусах хүртэл</p>
-              <Countdown deadline={deadline} />
-            </div>
-          )}
+        <div className="flex flex-col sm:flex-row gap-3 justify-center mb-20">
+          <Link
+            href="/register"
+            className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3.5 rounded-xl transition-colors"
+          >
+            Баг бүртгүүлэх
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+          <Link
+            href="/teams"
+            className="inline-flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold px-8 py-3.5 rounded-xl transition-colors border border-slate-200"
+          >
+            <Users className="w-4 h-4" />
+            Бүртгэгдсэн багууд
+          </Link>
         </div>
+
+        {/* Info cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
+          {[
+            { icon: Calendar, label: 'Тэмцээний огноо', value: date },
+            { icon: MapPin, label: 'Байршил', value: location },
+            { icon: Trophy, label: 'Бүртгэлийн дэдлайн', value: deadline || 'Тодорхойлогдоогүй' },
+          ].map((item, i) => (
+            <div key={i} className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-left">
+              <item.icon className="w-4 h-4 text-blue-500 mb-2" />
+              <p className="text-slate-400 text-xs font-medium uppercase tracking-wider mb-1">{item.label}</p>
+              <p className="text-slate-800 font-semibold text-sm">{item.value}</p>
+            </div>
+          ))}
+        </div>
+
+        {prizeInfo && (
+          <div className="mt-4 bg-amber-50 border border-amber-200 rounded-xl p-4 max-w-2xl mx-auto text-left">
+            <p className="text-amber-600 text-xs font-semibold uppercase tracking-wider mb-1">Шагнал</p>
+            <p className="text-slate-700 text-sm">{prizeInfo}</p>
+          </div>
+        )}
+
+        {deadline && (
+          <div className="mt-10 max-w-2xl mx-auto">
+            <p className="text-slate-400 text-xs font-medium mb-4 uppercase tracking-wider">Бүртгэл дуусах хүртэл</p>
+            <Countdown deadline={deadline} />
+          </div>
+        )}
       </section>
 
-      {/* Poster slider */}
       {posterUrls.length > 0 && (
-        <section className="px-4 pb-16">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-slate-800 text-2xl font-bold mb-6 text-center">Тэмцээний зар</h2>
-            <ImageSlider images={posterUrls} />
-          </div>
+        <section className="px-4 pb-16 max-w-3xl mx-auto">
+          <h2 className="text-slate-800 text-xl font-bold mb-4">Тэмцээний зар</h2>
+          <ImageSlider images={posterUrls} />
         </section>
       )}
 
-      {/* Schedule slider */}
       {scheduleUrls.length > 0 && (
-        <section className="px-4 pb-24">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-slate-800 text-2xl font-bold mb-6 text-center">Тоглолтын хуваарь</h2>
-            <ImageSlider images={scheduleUrls} />
-          </div>
+        <section className="px-4 pb-16 max-w-3xl mx-auto">
+          <h2 className="text-slate-800 text-xl font-bold mb-4">Тоглолтын хуваарь</h2>
+          <ImageSlider images={scheduleUrls} />
         </section>
       )}
 
       {/* CTA */}
       <section className="px-4 pb-24">
-        <div className="max-w-4xl mx-auto">
-          <div className="relative bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl p-10 text-center overflow-hidden shadow-xl shadow-blue-200">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-indigo-400/20 rounded-full blur-3xl" />
-            <div className="relative">
-              <Trophy className="w-12 h-12 text-white/80 mx-auto mb-4" />
-              <h2 className="text-3xl font-black text-white mb-3">Оролцоход бэлэн үү?</h2>
-              <p className="text-blue-100 mb-8 max-w-lg mx-auto">
-                Волейболд 6-12, Софт волейболд 3-6 гишүүнтэй баг бүртгүүлэн тэмцээнд оролцоорой. Эрэгтэй болон эмэгтэй ангилал тус бүрт нэгдсэн байдлаар оролцох боломжтой.
-              </p>
-              <Link
-                href="/register"
-                className="inline-flex items-center gap-2 bg-white hover:bg-blue-50 text-blue-600 font-bold px-10 py-4 rounded-2xl transition-all duration-200 shadow-lg hover:-translate-y-0.5"
-              >
-                Одоо бүртгүүлэх
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
-          </div>
+        <div className="max-w-3xl mx-auto bg-blue-600 rounded-2xl p-10 text-center">
+          <Trophy className="w-10 h-10 text-white/70 mx-auto mb-4" />
+          <h2 className="text-2xl font-black text-white mb-3">Оролцоход бэлэн үү?</h2>
+          <p className="text-blue-100 mb-8 max-w-md mx-auto text-sm leading-relaxed">
+            Волейболд 6-12, Софт волейболд 3-6 гишүүнтэй баг бүртгүүлэн тэмцээнд оролцоорой.
+          </p>
+          <Link
+            href="/register"
+            className="inline-flex items-center gap-2 bg-white hover:bg-blue-50 text-blue-600 font-bold px-8 py-3.5 rounded-xl transition-colors"
+          >
+            Одоо бүртгүүлэх
+            <ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
       </section>
     </div>
