@@ -168,7 +168,7 @@ export default function RegisterPage() {
           <h1 className="text-3xl font-black text-slate-800 mb-3">Амжилттай бүртгэгдлээ!</h1>
           <p className="text-slate-500 mb-8">Таны багийн бүртгэл хүлээн авагдлаа. Админ баталгаажуулсны дараа харагдана.</p>
           <button onClick={resetForm}
-            className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-bold px-8 py-3 rounded-2xl transition-all hover:scale-105 
+            className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-bold px-8 py-3 rounded-2xl transition-all hover:scale-105">
             Дахин бүртгүүлэх
           </button>
         </div>
