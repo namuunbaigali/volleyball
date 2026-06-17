@@ -17,27 +17,32 @@ interface TeamCardProps {
     school: string;
     members: Member[];
     status: string;
+    tournamentType?: string;
   };
 }
 
 export default function TeamCard({ team }: TeamCardProps) {
+  const isSoft = team.tournamentType === 'soft_volleyball';
+  const isPending = team.status === 'pending';
+
   return (
     <Link href={`/teams/${team._id}`}>
-      <div className="group relative bg-white/5 hover:bg-white/10 border border-white/10 hover:border-violet-500/40 rounded-2xl p-5 transition-all duration-300 cursor-pointer overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-violet-600/5 to-cyan-600/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+      <div className="group relative bg-white/5 hover:bg-white/10 border border-white/10 hover:border-red-700/40 rounded-2xl p-5 transition-all duration-300 cursor-pointer overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-red-800/5 to-amber-700/5 opacity-0 group-hover:opacity-100 transition-opacity" />
 
         <div className="relative">
           <div className="flex items-start justify-between mb-4">
-            <div>
-              <h3 className="text-white font-bold text-lg group-hover:text-violet-300 transition-colors">
+            <div className="flex-1 min-w-0 pr-2">
+              <h3 className="text-white font-bold text-lg group-hover:text-amber-300 transition-colors truncate">
                 {team.teamName}
               </h3>
               <div className="flex items-center gap-1.5 mt-1 text-gray-400 text-sm">
-                <School className="w-3.5 h-3.5" />
-                <span>{team.school}</span>
+                <School className="w-3.5 h-3.5 shrink-0" />
+                <span className="truncate">{team.school}</span>
               </div>
             </div>
-            <div className="flex flex-col items-end gap-2">
+            <div className="flex flex-col items-end gap-2 shrink-0">
+              {/* Gender badge */}
               <span
                 className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${
                   team.teamGender === 'male'
@@ -47,7 +52,23 @@ export default function TeamCard({ team }: TeamCardProps) {
               >
                 {team.teamGender === 'male' ? 'Эрэгтэй' : 'Эмэгтэй'}
               </span>
-              <ChevronRight className="w-4 h-4 text-gray-500 group-hover:text-violet-400 group-hover:translate-x-1 transition-all" />
+              {/* Tournament type badge */}
+              <span
+                className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${
+                  isSoft
+                    ? 'bg-amber-500/15 text-amber-300 border-amber-500/30'
+                    : 'bg-red-800/20 text-red-300 border-red-700/30'
+                }`}
+              >
+                {isSoft ? 'Софт' : 'Волейбол'}
+              </span>
+              {/* Pending badge */}
+              {isPending && (
+                <span className="text-xs font-semibold px-2.5 py-1 rounded-full border bg-amber-500/10 text-amber-400 border-amber-500/30">
+                  Хүлээгдэж буй
+                </span>
+              )}
+              <ChevronRight className="w-4 h-4 text-gray-500 group-hover:text-amber-400 group-hover:translate-x-1 transition-all" />
             </div>
           </div>
 
@@ -66,7 +87,7 @@ export default function TeamCard({ team }: TeamCardProps) {
                 </span>
               ))}
               {team.members.length > 4 && (
-                <span className="text-xs bg-violet-500/10 border border-violet-500/20 rounded-lg px-2 py-1 text-violet-300">
+                <span className="text-xs bg-amber-500/10 border border-amber-500/20 rounded-lg px-2 py-1 text-amber-300">
                   +{team.members.length - 4}
                 </span>
               )}

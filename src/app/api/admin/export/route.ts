@@ -19,7 +19,11 @@ interface IMemberRow {
 
 export async function GET(req: NextRequest) {
   try {
-    const adminKey = req.headers.get('x-admin-key');
+    // Accept key from header or query param (for direct link downloads)
+    const adminKey =
+      req.headers.get('x-admin-key') ||
+      new URL(req.url).searchParams.get('key');
+
     if (adminKey !== process.env.ADMIN_SECRET) {
       return NextResponse.json({ success: false, error: 'Зөвшөөрөлгүй' }, { status: 401 });
     }
@@ -55,31 +59,40 @@ export async function GET(req: NextRequest) {
       { name: 'Бүх багууд', filter: () => teams },
       {
         name: 'Волейбол эрэгтэй',
-        filter: () => teams.filter((t) => t.tournamentType !== 'soft_volleyball' && t.teamGender === 'male'),
+        filter: () =>
+          teams.filter((t) => t.tournamentType !== 'soft_volleyball' && t.teamGender === 'male'),
       },
       {
         name: 'Волейбол эмэгтэй',
-        filter: () => teams.filter((t) => t.tournamentType !== 'soft_volleyball' && t.teamGender === 'female'),
+        filter: () =>
+          teams.filter((t) => t.tournamentType !== 'soft_volleyball' && t.teamGender === 'female'),
       },
       {
         name: 'Софт эрэгтэй',
-        filter: () => teams.filter((t) => t.tournamentType === 'soft_volleyball' && t.teamGender === 'male'),
+        filter: () =>
+          teams.filter((t) => t.tournamentType === 'soft_volleyball' && t.teamGender === 'male'),
       },
       {
         name: 'Софт эмэгтэй',
-        filter: () => teams.filter((t) => t.tournamentType === 'soft_volleyball' && t.teamGender === 'female'),
+        filter: () =>
+          teams.filter((t) => t.tournamentType === 'soft_volleyball' && t.teamGender === 'female'),
       },
     ];
 
     for (const { name, filter } of sheetDefs) {
       const rows = toRows(filter());
-      const ws = XLSX.utils.json_to_sheet(rows);
+      const ws = XLSX.utils.json_to_sheet(rows.length > 0 ? rows : [{}]);
       XLSX.utils.book_append_sheet(wb, ws, name);
     }
 
-    const buf = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
+    // xlsx returns a Buffer in Node; convert to ArrayBuffer for NextResponse
+    const rawBuf = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
+    const arrayBuf: ArrayBuffer = rawBuf.buffer.slice(
+      rawBuf.byteOffset,
+      rawBuf.byteOffset + rawBuf.byteLength
+    );
 
-    return new NextResponse(buf, {
+    return new NextResponse(arrayBuf, {
       status: 200,
       headers: {
         'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',

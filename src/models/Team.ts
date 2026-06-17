@@ -46,15 +46,6 @@ const TeamSchema = new Schema<ITeam>(
     },
     members: {
       type: [MemberSchema],
-      validate: {
-        validator: function (this: ITeam, v: IMember[]) {
-          if (this.tournamentType === 'soft_volleyball') {
-            return v.length >= 3 && v.length <= 6;
-          }
-          return v.length >= 6 && v.length <= 12;
-        },
-        message: 'Гишүүний тоо буруу байна',
-      },
     },
     status: {
       type: String,

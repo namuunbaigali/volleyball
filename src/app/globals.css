@@ -1,8 +1,9 @@
 @import "tailwindcss";
 
 :root {
-  --background: #050510;
-  --foreground: #f0f0ff;
+  --background: #080508;
+  --foreground: #f0ece8;
+  --color-primary: #C0392B;
 }
 
 @theme inline {
@@ -24,15 +25,15 @@ body {
 
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.4); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(139,92,246,0.7); }
+::-webkit-scrollbar-thumb { background: rgba(192,57,43,0.4); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(192,57,43,0.7); }
 
 .bg-mesh {
   background:
-    radial-gradient(ellipse 80% 80% at 20% 20%, rgba(120,40,200,0.18) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 60% at 80% 80%, rgba(0,200,220,0.12) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 50% at 50% 50%, rgba(200,50,150,0.06) 0%, transparent 70%),
-    #050510;
+    radial-gradient(ellipse 80% 80% at 20% 20%, rgba(160,30,20,0.20) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 60% at 80% 80%, rgba(180,100,0,0.14) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 50% at 50% 50%, rgba(120,20,10,0.07) 0%, transparent 70%),
+    #080508;
 }
 
 @keyframes float {
@@ -46,7 +47,7 @@ body {
   100% { background-position: 200% center; }
 }
 .shimmer-text {
-  background: linear-gradient(90deg, #a78bfa, #22d3ee, #f472b6, #a78bfa);
+  background: linear-gradient(90deg, #C0392B, #f59e0b, #fbbf24, #C0392B);
   background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;

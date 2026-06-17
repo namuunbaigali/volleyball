@@ -40,7 +40,7 @@ const InputField = ({
 }) => (
   <div>
     <label className="block text-gray-300 text-sm font-medium mb-1.5">
-      {label} {required && <span className="text-violet-400">*</span>}
+      {label} {required && <span className="text-red-400">*</span>}
     </label>
     <input
       type={type}
@@ -48,7 +48,7 @@ const InputField = ({
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
       required={required}
-      className="w-full bg-white/5 border border-white/10 focus:border-violet-500/60 rounded-xl px-4 py-3 text-white placeholder-gray-600 outline-none transition-colors text-sm"
+      className="w-full bg-white/5 border border-white/10 focus:border-amber-500/60 rounded-xl px-4 py-3 text-white placeholder-gray-600 outline-none transition-colors text-sm"
     />
   </div>
 );
@@ -59,21 +59,32 @@ export default function RegisterPage() {
   const [school, setSchool] = useState('');
   const [contactPhone, setContactPhone] = useState('');
   const [contactEmail, setContactEmail] = useState('');
-  const [members, setMembers] = useState<Member[]>([emptyMember(), emptyMember(), emptyMember(), emptyMember(), emptyMember(), emptyMember()]);
+  const [tournamentType, setTournamentType] = useState<'volleyball' | 'soft_volleyball'>('volleyball');
+  const [members, setMembers] = useState<Member[]>(Array.from({ length: 6 }, emptyMember));
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+
+  const isSoft = tournamentType === 'soft_volleyball';
+  const minMembers = isSoft ? 3 : 6;
+  const maxMembers = isSoft ? 6 : 12;
+
+  const handleTournamentTypeChange = (newType: 'volleyball' | 'soft_volleyball') => {
+    setTournamentType(newType);
+    const newMin = newType === 'soft_volleyball' ? 3 : 6;
+    setMembers(Array.from({ length: newMin }, emptyMember));
+  };
 
   const updateMember = (index: number, field: keyof Member, value: string) => {
     setMembers((prev) => prev.map((m, i) => (i === index ? { ...m, [field]: value } : m)));
   };
 
   const addMember = () => {
-    if (members.length < 12) setMembers((prev) => [...prev, emptyMember()]);
+    if (members.length < maxMembers) setMembers((prev) => [...prev, emptyMember()]);
   };
 
   const removeMember = (index: number) => {
-    if (members.length > 6) setMembers((prev) => prev.filter((_, i) => i !== index));
+    if (members.length > minMembers) setMembers((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -91,6 +102,7 @@ export default function RegisterPage() {
           school,
           contactPhone,
           contactEmail,
+          tournamentType,
           members: members.map((m) => ({
             ...m,
             age: parseInt(m.age),
@@ -111,6 +123,16 @@ export default function RegisterPage() {
     }
   };
 
+  const resetForm = () => {
+    setSuccess(false);
+    setTeamName('');
+    setSchool('');
+    setContactPhone('');
+    setContactEmail('');
+    setTournamentType('volleyball');
+    setMembers(Array.from({ length: 6 }, emptyMember));
+  };
+
   if (success) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
@@ -123,15 +145,8 @@ export default function RegisterPage() {
             Таны багийн бүртгэл хүлээн авагдлаа. Админ баталгаажуулсны дараа багийн жагсаалтад харагдана.
           </p>
           <button
-            onClick={() => {
-              setSuccess(false);
-              setTeamName('');
-              setSchool('');
-              setContactPhone('');
-              setContactEmail('');
-              setMembers([emptyMember(), emptyMember(), emptyMember(), emptyMember(), emptyMember(), emptyMember()]);
-            }}
-            className="bg-violet-600 hover:bg-violet-500 text-white font-semibold px-8 py-3 rounded-2xl transition-colors"
+            onClick={resetForm}
+            className="bg-red-700 hover:bg-red-600 text-white font-semibold px-8 py-3 rounded-2xl transition-colors"
           >
             Дахин бүртгүүлэх
           </button>
@@ -145,10 +160,40 @@ export default function RegisterPage() {
       <div className="max-w-3xl mx-auto">
         <div className="mb-10">
           <h1 className="text-4xl font-black text-white mb-2">Баг бүртгүүлэх</h1>
-          <p className="text-gray-400">Бүх талбарыг үнэн зөв бөглөнө үү. 6-12 гишүүн бүртгэх боломжтой.</p>
+          <p className="text-gray-400">
+            Бүх талбарыг үнэн зөв бөглөнө үү.{' '}
+            {isSoft ? '3-6 гишүүн бүртгэх боломжтой.' : '6-12 гишүүн бүртгэх боломжтой.'}
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Tournament type selector */}
+          <div className="bg-white/5 border border-white/10 rounded-3xl p-6">
+            <h2 className="text-white font-bold text-lg mb-4">Тэмцээний төрөл</h2>
+            <div className="grid grid-cols-2 gap-3">
+              {(
+                [
+                  { value: 'volleyball', label: 'Волейбол', sub: '6–12 гишүүн' },
+                  { value: 'soft_volleyball', label: 'Софт Волейбол', sub: '3–6 гишүүн' },
+                ] as { value: 'volleyball' | 'soft_volleyball'; label: string; sub: string }[]
+              ).map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => handleTournamentTypeChange(opt.value)}
+                  className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all duration-200 ${
+                    tournamentType === opt.value
+                      ? 'border-amber-500 bg-amber-500/10 text-white'
+                      : 'border-white/10 bg-white/3 text-gray-400 hover:border-white/20 hover:text-white'
+                  }`}
+                >
+                  <span className="font-bold text-base">{opt.label}</span>
+                  <span className="text-xs mt-1 opacity-70">{opt.sub}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Team info */}
           <div className="bg-white/5 border border-white/10 rounded-3xl p-6 space-y-4">
             <h2 className="text-white font-bold text-lg">Багийн мэдээлэл</h2>
@@ -156,13 +201,13 @@ export default function RegisterPage() {
               <InputField label="Багийн нэр" value={teamName} onChange={setTeamName} placeholder="Баг нэр" required />
               <div>
                 <label className="block text-gray-300 text-sm font-medium mb-1.5">
-                  Ангилал <span className="text-violet-400">*</span>
+                  Ангилал <span className="text-red-400">*</span>
                 </label>
                 <div className="relative">
                   <select
                     value={teamGender}
                     onChange={(e) => setTeamGender(e.target.value as 'male' | 'female')}
-                    className="w-full bg-white/5 border border-white/10 focus:border-violet-500/60 rounded-xl px-4 py-3 text-white outline-none transition-colors text-sm appearance-none cursor-pointer"
+                    className="w-full bg-white/5 border border-white/10 focus:border-amber-500/60 rounded-xl px-4 py-3 text-white outline-none transition-colors text-sm appearance-none cursor-pointer"
                   >
                     <option value="male" className="bg-gray-900">Эрэгтэй</option>
                     <option value="female" className="bg-gray-900">Эмэгтэй</option>
@@ -183,21 +228,24 @@ export default function RegisterPage() {
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h2 className="text-white font-bold text-lg flex items-center gap-2">
-                  <Users className="w-5 h-5 text-violet-400" />
+                  <Users className="w-5 h-5 text-amber-400" />
                   Гишүүдийн мэдээлэл
                 </h2>
                 <p className="text-gray-500 text-sm mt-0.5">
-                  {members.length}/12 гишүүн{' '}
-                  {members.length < 6 && (
-                    <span className="text-red-400">(хамгийн багадаа 6 шаардлагатай)</span>
+                  {members.length}/{maxMembers} гишүүн{' '}
+                  {members.length < minMembers && (
+                    <span className="text-red-400">(хамгийн багадаа {minMembers} шаардлагатай)</span>
                   )}
                 </p>
+                {isSoft && (
+                  <p className="text-amber-400/70 text-xs mt-1">Хамгийн багадаа 3 гишүүн</p>
+                )}
               </div>
-              {members.length < 12 && (
+              {members.length < maxMembers && (
                 <button
                   type="button"
                   onClick={addMember}
-                  className="flex items-center gap-2 bg-violet-600/20 hover:bg-violet-600/30 border border-violet-500/30 text-violet-300 text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
+                  className="flex items-center gap-2 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
                 >
                   <Plus className="w-4 h-4" />
                   Гишүүн нэмэх
@@ -209,8 +257,8 @@ export default function RegisterPage() {
               {members.map((member, i) => (
                 <div key={i} className="bg-white/3 border border-white/8 rounded-2xl p-5">
                   <div className="flex items-center justify-between mb-4">
-                    <span className="text-violet-400 text-sm font-bold"># {i + 1} гишүүн</span>
-                    {members.length > 6 && (
+                    <span className="text-amber-400 text-sm font-bold"># {i + 1} гишүүн</span>
+                    {members.length > minMembers && (
                       <button
                         type="button"
                         onClick={() => removeMember(i)}
@@ -229,13 +277,13 @@ export default function RegisterPage() {
                     <InputField label="Нас" value={member.age} onChange={(v) => updateMember(i, 'age', v)} type="number" placeholder="25" required />
                     <div>
                       <label className="block text-gray-300 text-sm font-medium mb-1.5">
-                        Хүйс <span className="text-violet-400">*</span>
+                        Хүйс <span className="text-red-400">*</span>
                       </label>
                       <div className="relative">
                         <select
                           value={member.gender}
                           onChange={(e) => updateMember(i, 'gender', e.target.value)}
-                          className="w-full bg-white/5 border border-white/10 focus:border-violet-500/60 rounded-xl px-4 py-3 text-white outline-none transition-colors text-sm appearance-none cursor-pointer"
+                          className="w-full bg-white/5 border border-white/10 focus:border-amber-500/60 rounded-xl px-4 py-3 text-white outline-none transition-colors text-sm appearance-none cursor-pointer"
                         >
                           <option value="male" className="bg-gray-900">Эрэгтэй</option>
                           <option value="female" className="bg-gray-900">Эмэгтэй</option>
@@ -258,8 +306,8 @@ export default function RegisterPage() {
 
           <button
             type="submit"
-            disabled={submitting || members.length < 6}
-            className="w-full bg-gradient-to-r from-violet-600 to-violet-500 hover:from-violet-500 hover:to-violet-400 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 rounded-2xl transition-all duration-200 shadow-lg shadow-violet-600/30"
+            disabled={submitting || members.length < minMembers}
+            className="w-full bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 rounded-2xl transition-all duration-200 shadow-lg shadow-red-700/30"
           >
             {submitting ? 'Бүртгэж байна...' : 'Баг бүртгүүлэх'}
           </button>
