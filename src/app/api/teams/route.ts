@@ -37,25 +37,14 @@ export async function POST(req: NextRequest) {
     }
 
     const isSoft = tournamentType === 'soft_volleyball';
-    const minMembers = isSoft ? 6 : 6;
-    const maxMembers = isSoft ? 6 : 12;
+    const minMembers = 6;
+    const maxMembers = 12;
 
     if (members.length < minMembers || members.length > maxMembers) {
       return NextResponse.json(
-        { success: false, error: isSoft ? 'Софт волейболд яг 6 гишүүн (3 эрэгтэй + 3 эмэгтэй) байх ёстой' : 'Багт 6-12 гишүүн байх ёстой' },
+        { success: false, error: 'Багт 6-12 гишүүн байх ёстой' },
         { status: 400 }
       );
-    }
-
-    if (isSoft) {
-      const maleCount = members.filter((m: { gender: string }) => m.gender === 'male').length;
-      const femaleCount = members.filter((m: { gender: string }) => m.gender === 'female').length;
-      if (maleCount !== 3 || femaleCount !== 3) {
-        return NextResponse.json(
-          { success: false, error: 'Софт волейболд яг 3 эрэгтэй + 3 эмэгтэй тоглогч байх ёстой' },
-          { status: 400 }
-        );
-      }
     }
 
     const existing = await Team.findOne({ teamName, tournamentType });

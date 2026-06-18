@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Calendar, MapPin, Trophy, Users, ArrowRight } from 'lucide-react';
+import { Calendar, MapPin, Trophy, Users, ArrowRight, Zap, Medal } from 'lucide-react';
 import connectDB from '@/lib/mongodb';
 import Tournament from '@/models/Tournament';
 import Countdown from '@/components/Countdown';
@@ -40,71 +40,105 @@ export default async function HomePage() {
   const scheduleUrls = (tournament?.schedules || []).map((s) => s.url);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white overflow-x-hidden">
       {/* Hero */}
-      <section className="px-4 pt-20 pb-24 max-w-5xl mx-auto text-center">
-        <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-full px-4 py-1.5 text-blue-600 text-sm font-medium mb-8">
-          <span className="relative flex h-2 w-2">
-            <span className="ping-slow absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
-          </span>
-          Бүртгэл нээлттэй байна
+      <section className="relative px-4 pt-20 pb-24 max-w-5xl mx-auto text-center overflow-hidden">
+
+        {/* Blob decorations — зурган дээрх загвар */}
+        <div className="pointer-events-none select-none" aria-hidden>
+          {/* Top-right teal blob */}
+          <svg className="absolute -top-10 -right-24 w-80 h-80 opacity-60" viewBox="0 0 400 400" fill="none">
+            <path d="M320 60 C380 20, 420 100, 390 180 C360 260, 280 300, 220 270 C160 240, 140 160, 170 100 C200 40, 260 100, 320 60Z" fill="#5EEAD4" />
+          </svg>
+          {/* Right blue blob */}
+          <svg className="absolute top-20 -right-10 w-64 h-72 opacity-70" viewBox="0 0 300 350" fill="none">
+            <path d="M240 30 C290 10, 310 80, 290 160 C270 240, 200 280, 150 250 C100 220, 90 150, 120 90 C150 30, 190 50, 240 30Z" fill="#2563EB" />
+          </svg>
+          {/* Bottom-right gold arc */}
+          <svg className="absolute bottom-10 -right-10 w-56 h-56 opacity-40" viewBox="0 0 250 250" fill="none">
+            <path d="M200 200 Q250 150 200 80 Q150 10 80 40" stroke="#F59E0B" strokeWidth="3" fill="none" strokeLinecap="round"/>
+            <path d="M220 220 Q270 160 215 85 Q165 10 90 45" stroke="#F59E0B" strokeWidth="1.5" fill="none" strokeLinecap="round" opacity="0.5"/>
+          </svg>
+          {/* Bottom blue semicircle */}
+          <svg className="absolute -bottom-16 left-1/2 -translate-x-1/2 w-48 h-24 opacity-80" viewBox="0 0 200 100" fill="none">
+            <path d="M0 100 A100 100 0 0 1 200 100Z" fill="#2563EB" />
+          </svg>
+          {/* Volleyball ball — large faded background */}
+          <svg className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[480px] h-[480px] opacity-[0.04]" viewBox="0 0 200 200" fill="none">
+            <circle cx="100" cy="100" r="95" stroke="#0f172a" strokeWidth="3" fill="none"/>
+            <path d="M100 5 C120 40, 160 60, 195 100" stroke="#0f172a" strokeWidth="3" fill="none"/>
+            <path d="M100 5 C80 40, 40 60, 5 100" stroke="#0f172a" strokeWidth="3" fill="none"/>
+            <path d="M195 100 C160 140, 120 160, 100 195" stroke="#0f172a" strokeWidth="3" fill="none"/>
+            <path d="M5 100 C40 140, 80 160, 100 195" stroke="#0f172a" strokeWidth="3" fill="none"/>
+            <path d="M30 30 C60 60, 80 110, 60 160" stroke="#0f172a" strokeWidth="3" fill="none"/>
+            <path d="M170 30 C140 60, 120 110, 140 160" stroke="#0f172a" strokeWidth="3" fill="none"/>
+          </svg>
         </div>
 
-        <h1 className="text-5xl sm:text-6xl md:text-7xl font-black tracking-tight mb-6 leading-tight">
-          <span className="text-slate-900">{title.split(' ').slice(0, -1).join(' ')} </span>
-          <span className="shimmer-text">{title.split(' ').slice(-1)[0]}</span>
-        </h1>
+        <div className="relative z-10">
+          <div className="inline-flex items-center gap-2 bg-white border border-slate-200 rounded-full px-4 py-1.5 text-slate-600 text-sm font-medium mb-8 shadow-sm">
+            <span className="relative flex h-2 w-2">
+              <span className="ping-slow absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+            </span>
+            Бүртгэл нээлттэй байна
+          </div>
 
-        <p className="text-slate-500 text-lg max-w-xl mx-auto mb-10 leading-relaxed">
-          {description}
-        </p>
+          <h1 className="text-5xl sm:text-6xl md:text-7xl font-black tracking-tight mb-6 leading-tight">
+            <span className="text-slate-900">{title.split(' ').slice(0, -1).join(' ')} </span>
+            <span className="shimmer-text">{title.split(' ').slice(-1)[0]}</span>
+          </h1>
 
-        <div className="flex flex-col sm:flex-row gap-3 justify-center mb-20">
-          <Link
-            href="/register"
-            className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3.5 rounded-xl transition-colors"
-          >
-            Баг бүртгүүлэх
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-          <Link
-            href="/teams"
-            className="inline-flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold px-8 py-3.5 rounded-xl transition-colors border border-slate-200"
-          >
-            <Users className="w-4 h-4" />
-            Бүртгэгдсэн багууд
-          </Link>
-        </div>
+          <p className="text-slate-500 text-lg max-w-xl mx-auto mb-10 leading-relaxed">
+            {description}
+          </p>
 
-        {/* Info cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
-          {[
-            { icon: Calendar, label: 'Тэмцээний огноо', value: date },
-            { icon: MapPin, label: 'Байршил', value: location },
-            { icon: Trophy, label: 'Бүртгэлийн дэдлайн', value: deadline || 'Тодорхойлогдоогүй' },
-          ].map((item, i) => (
-            <div key={i} className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-left">
-              <item.icon className="w-4 h-4 text-blue-500 mb-2" />
-              <p className="text-slate-400 text-xs font-medium uppercase tracking-wider mb-1">{item.label}</p>
-              <p className="text-slate-800 font-semibold text-sm">{item.value}</p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-20">
+            <Link
+              href="/register"
+              className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3.5 rounded-xl transition-colors"
+            >
+              Баг бүртгүүлэх
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+            <Link
+              href="/teams"
+              className="inline-flex items-center justify-center gap-2 bg-white hover:bg-slate-50 text-slate-700 font-semibold px-8 py-3.5 rounded-xl transition-colors border border-slate-200"
+            >
+              <Users className="w-4 h-4" />
+              Бүртгэгдсэн багууд
+            </Link>
+          </div>
+
+          {/* Info cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
+            {[
+              { icon: Calendar, label: 'Тэмцээний огноо', value: date },
+              { icon: MapPin, label: 'Байршил', value: location },
+              { icon: Trophy, label: 'Бүртгэлийн дэдлайн', value: deadline || 'Тодорхойлогдоогүй' },
+            ].map((item, i) => (
+              <div key={i} className="bg-white border border-slate-200 rounded-xl p-4 text-left shadow-sm">
+                <item.icon className="w-4 h-4 text-blue-500 mb-2" />
+                <p className="text-slate-400 text-xs font-medium uppercase tracking-wider mb-1">{item.label}</p>
+                <p className="text-slate-800 font-semibold text-sm">{item.value}</p>
+              </div>
+            ))}
+          </div>
+
+          {prizeInfo && (
+            <div className="mt-4 bg-amber-50 border border-amber-200 rounded-xl p-4 max-w-2xl mx-auto text-left">
+              <p className="text-amber-600 text-xs font-semibold uppercase tracking-wider mb-1">Шагнал</p>
+              <p className="text-slate-700 text-sm">{prizeInfo}</p>
             </div>
-          ))}
+          )}
+
+          {deadline && (
+            <div className="mt-10 max-w-2xl mx-auto">
+              <p className="text-slate-400 text-xs font-medium mb-4 uppercase tracking-wider">Бүртгэл дуусах хүртэл</p>
+              <Countdown deadline={deadline} />
+            </div>
+          )}
         </div>
-
-        {prizeInfo && (
-          <div className="mt-4 bg-amber-50 border border-amber-200 rounded-xl p-4 max-w-2xl mx-auto text-left">
-            <p className="text-amber-600 text-xs font-semibold uppercase tracking-wider mb-1">Шагнал</p>
-            <p className="text-slate-700 text-sm">{prizeInfo}</p>
-          </div>
-        )}
-
-        {deadline && (
-          <div className="mt-10 max-w-2xl mx-auto">
-            <p className="text-slate-400 text-xs font-medium mb-4 uppercase tracking-wider">Бүртгэл дуусах хүртэл</p>
-            <Countdown deadline={deadline} />
-          </div>
-        )}
       </section>
 
       {posterUrls.length > 0 && (
@@ -121,21 +155,60 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* CTA */}
+      {/* CTA — tournament spirit */}
       <section className="px-4 pb-24">
-        <div className="max-w-3xl mx-auto bg-blue-600 rounded-2xl p-10 text-center">
-          <Trophy className="w-10 h-10 text-white/70 mx-auto mb-4" />
-          <h2 className="text-2xl font-black text-white mb-3">Оролцоход бэлэн үү?</h2>
-          <p className="text-blue-100 mb-8 max-w-md mx-auto text-sm leading-relaxed">
-            Волейболд 6-12, Софт волейболд 3-6 гишүүнтэй баг бүртгүүлэн тэмцээнд оролцоорой.
-          </p>
-          <Link
-            href="/register"
-            className="inline-flex items-center gap-2 bg-white hover:bg-blue-50 text-blue-600 font-bold px-8 py-3.5 rounded-xl transition-colors"
-          >
-            Одоо бүртгүүлэх
-            <ArrowRight className="w-4 h-4" />
-          </Link>
+        <div className="max-w-4xl mx-auto relative overflow-hidden rounded-3xl bg-slate-900 text-white">
+          {/* Blob decorations inside CTA */}
+          <div className="pointer-events-none absolute inset-0" aria-hidden>
+            <svg className="absolute -top-12 -right-12 w-64 h-64 opacity-30" viewBox="0 0 300 300" fill="none">
+              <path d="M240 40 C290 10, 320 90, 290 170 C260 250, 180 290, 120 260 C60 230, 50 150, 80 90 C110 30, 190 70, 240 40Z" fill="#5EEAD4" />
+            </svg>
+            <svg className="absolute -bottom-8 -left-8 w-48 h-48 opacity-20" viewBox="0 0 250 250" fill="none">
+              <path d="M190 30 C240 10, 260 80, 240 150 C220 220, 150 260, 90 230 C30 200, 20 130, 50 70 C80 10, 140 50, 190 30Z" fill="#2563EB" />
+            </svg>
+            {/* Volleyball lines */}
+            <svg className="absolute right-8 top-1/2 -translate-y-1/2 w-40 h-40 opacity-10" viewBox="0 0 200 200" fill="none">
+              <circle cx="100" cy="100" r="90" stroke="white" strokeWidth="2.5" fill="none"/>
+              <path d="M100 10 C118 40, 155 58, 190 100" stroke="white" strokeWidth="2.5" fill="none"/>
+              <path d="M100 10 C82 40, 45 58, 10 100" stroke="white" strokeWidth="2.5" fill="none"/>
+              <path d="M190 100 C155 142, 118 160, 100 190" stroke="white" strokeWidth="2.5" fill="none"/>
+              <path d="M10 100 C45 142, 82 160, 100 190" stroke="white" strokeWidth="2.5" fill="none"/>
+            </svg>
+          </div>
+
+          <div className="relative z-10 p-10 sm:p-14 text-center">
+            <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 text-sm font-medium mb-6 text-teal-300">
+              <Zap className="w-3.5 h-3.5" />
+              Тэмцээн 2025
+            </div>
+
+            <h2 className="text-3xl sm:text-4xl font-black mb-4">Оролцоход бэлэн үү?</h2>
+            <p className="text-slate-300 mb-10 max-w-lg mx-auto leading-relaxed">
+              Волейболд <strong className="text-white">6-12</strong>, Софт волейболд <strong className="text-white">6-12</strong> гишүүнтэй баг бүртгүүлэн тэмцээнд оролцоорой.
+            </p>
+
+            {/* Stats */}
+            <div className="grid grid-cols-3 gap-4 max-w-lg mx-auto mb-10">
+              {[
+                { icon: Users, value: '6-12', label: 'Тоглогч' },
+                { icon: Medal, value: '4', label: 'Ангилал' },
+                { icon: Trophy, value: '🏆', label: 'Шагнал' },
+              ].map((s, i) => (
+                <div key={i} className="bg-white/10 border border-white/15 rounded-2xl p-4">
+                  <p className="text-2xl font-black text-white mb-1">{s.value}</p>
+                  <p className="text-slate-400 text-xs">{s.label}</p>
+                </div>
+              ))}
+            </div>
+
+            <Link
+              href="/register"
+              className="inline-flex items-center gap-2 bg-white hover:bg-slate-100 text-slate-900 font-bold px-10 py-4 rounded-xl transition-colors text-base"
+            >
+              Одоо бүртгүүлэх
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
       </section>
     </div>
