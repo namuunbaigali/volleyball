@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     const entry = { url: imageData, uploadedAt: new Date() };
 
     // Prepend new image (newest first), max 10
-    const current = tournament[field] as typeof entry[];
+    const current = Array.isArray(tournament[field]) ? tournament[field] as typeof entry[] : [];
     const updated = [entry, ...current].slice(0, 10);
 
     await Tournament.findByIdAndUpdate(tournament._id, { [field]: updated });

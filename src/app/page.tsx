@@ -145,7 +145,8 @@ export default async function HomePage() {
                 ) : null}
                 {item.label === 'Удирдамж' && guidelineUrls.length > 0 ? (
                   <a
-                    href="#guideline-section"
+                    href={guidelineUrls[0]}
+                    download="udirdamj"
                     className="mt-3 inline-flex items-center justify-center gap-2 text-blue-600 text-xs font-semibold"
                   >
                     Үзэх
@@ -154,17 +155,6 @@ export default async function HomePage() {
               </div>
             ))}
           </div>
-
-          {mapLink && (
-            <div className="mt-6 rounded-3xl overflow-hidden border border-slate-200 shadow-sm max-w-4xl mx-auto">
-              <iframe
-                src={`https://www.google.com/maps?q=${encodeURIComponent(mapLink)}&output=embed`}
-                className="w-full h-80"
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              />
-            </div>
-          )}
 
           {prizeInfo && (
             <div className="mt-4 bg-amber-50 border border-amber-200 rounded-xl p-4 max-w-lg mx-auto text-left">
@@ -189,14 +179,7 @@ export default async function HomePage() {
           <ImageSlider images={scheduleUrls} />
         </section>
       )}
-       
-        {guidelineUrls.length > 0 && (
-        <section id="guideline-section" className="px-4 pb-16 max-w-3xl mx-auto">
-          <h2 className="text-slate-800 text-xl font-bold mb-4">Тэмцээний удирдамж</h2>
-          {guidelineInfo ? <p className="text-slate-600 mb-4">{guidelineInfo}</p> : null}
-          <ImageSlider images={guidelineUrls} />
-        </section>
-      )}
+
 
       {/* CTA — tournament spirit */}
       <section className="px-4 pb-24">
