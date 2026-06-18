@@ -10,8 +10,11 @@ export interface ITournament extends Document {
   description: string;
   date: string;
   location: string;
+  locationMapLink: string;
+  guidelineInfo: string;
   posters: IImageEntry[];
   schedules: IImageEntry[];
+  guideline: IImageEntry[];
   registrationDeadline: string;
   prizeInfo: string;
   updatedAt: Date;
