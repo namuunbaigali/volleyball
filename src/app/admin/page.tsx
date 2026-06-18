@@ -57,6 +57,8 @@ interface TournamentInfo {
   description: string;
   date: string;
   location: string;
+  locationMapLink: string;
+  guidelineInfo: string;
   posters: ImageEntry[];
   schedules: ImageEntry[];
   guideline: ImageEntry[];
@@ -80,6 +82,8 @@ export default function AdminPage() {
     description: '',
     date: '',
     location: '',
+    locationMapLink: '',
+    guidelineInfo: '',
     posters: [],
     schedules: [],
     registrationDeadline: '',
@@ -110,6 +114,8 @@ export default function AdminPage() {
         description: data.data.description || '',
         date: data.data.date || '',
         location: data.data.location || '',
+        locationMapLink: data.data.locationMapLink || '',
+        guidelineInfo: data.data.guidelineInfo || '',
         posters: data.data.posters || [],
         schedules: data.data.schedules || [],
         registrationDeadline: data.data.registrationDeadline || '',
@@ -629,8 +635,9 @@ export default function AdminPage() {
                 { label: 'Тайлбар', key: 'description', placeholder: 'Тэмцээний тайлбар...' },
                 { label: 'Тэмцээн болох огноо', key: 'date', placeholder: '2025-06-15' },
                 { label: 'Байршил', key: 'location', placeholder: 'UB Sports Center' },
+                { label: 'Google Maps холбоос', key: 'locationMapLink', placeholder: 'https://www.google.com/maps/place/...' },
+                { label: 'Удирдамжийн нэмэлт мэдээлэл', key: 'guidelineInfo', placeholder: 'Тэмцээний удирдамжийн үндсэн мэдээлэл...' },
                 { label: 'Бүртгэл хаагдах огноо', key: 'registrationDeadline', placeholder: '2025-06-01T00:00:00' },
-                { label: 'Удирдамж', key: 'guideline', placeholder: 'Тэмцээний удирдамж...' },
                 { label: 'Шагналын мэдээлэл', key: 'prizeInfo', placeholder: '1-р байр: ...' },
               ].map((field) => (
                 <div key={field.key}>

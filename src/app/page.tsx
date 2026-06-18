@@ -15,8 +15,9 @@ async function getTournament() {
       description?: string;
       date?: string;
       location?: string;
-      guidelineDesc?: string;
-      guideline?:{url:string ; uplaodedAt: Date}[];
+      locationMapLink?: string;
+      guidelineInfo?: string;
+      guideline?: { url: string; uploadedAt: Date }[];
       posters?: { url: string; uploadedAt: Date }[];
       schedules?: { url: string; uploadedAt: Date }[];
       registrationDeadline?: string;
@@ -36,7 +37,8 @@ export default async function HomePage() {
     'Улаанбаатар хотын хамгийн том волейбол тэмцээнд тавтай морилно уу. Эрэгтэй болон эмэгтэй ангиллаар баг бүртгүүлж, өрсөлдөөнд оролцоорой!';
   const date = tournament?.date || 'Тодорхойлогдоогүй';
   const location = tournament?.location || 'Тодорхойлогдоогүй';
-  const guidelineDesc = tournament?.guidelineDesc || '';
+  const guidelineInfo = tournament?.guidelineInfo || '';
+  const mapLink = tournament?.locationMapLink || '';
   const deadline = tournament?.registrationDeadline || '';
   const prizeInfo = tournament?.prizeInfo || '';
   const posterUrls = (tournament?.posters || []).map((p) => p.url);
@@ -125,15 +127,44 @@ export default async function HomePage() {
             {[
               { icon: Calendar, label: 'Тэмцээний огноо', value: date },
               { icon: MapPin, label: 'Байршил', value: location },
-              { icon: MapPin, label: 'Удирдамж', value: guidelineDesc || 'Тодорхойлогдоогүй' },
+              { icon: MapPin, label: 'Удирдамж', value: guidelineInfo || 'Тодорхойлогдоогүй' },
             ].map((item, i) => (
               <div key={i} className="bg-white border border-slate-200 rounded-xl p-4 text-left shadow-sm">
                 <item.icon className="w-4 h-4 text-blue-500 mb-2" />
                 <p className="text-slate-400 text-xs font-medium uppercase tracking-wider mb-1">{item.label}</p>
                 <p className="text-slate-800 font-semibold text-sm">{item.value}</p>
+                {item.label === 'Байршил' && mapLink ? (
+                  <a
+                    href={mapLink}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-3 inline-flex items-center justify-center gap-2 text-blue-600 text-xs font-semibold"
+                  >
+                    Үзэх
+                  </a>
+                ) : null}
+                {item.label === 'Удирдамж' && guidelineUrls.length > 0 ? (
+                  <a
+                    href="#guideline-section"
+                    className="mt-3 inline-flex items-center justify-center gap-2 text-blue-600 text-xs font-semibold"
+                  >
+                    Үзэх
+                  </a>
+                ) : null}
               </div>
             ))}
           </div>
+
+          {mapLink && (
+            <div className="mt-6 rounded-3xl overflow-hidden border border-slate-200 shadow-sm max-w-4xl mx-auto">
+              <iframe
+                src={`https://www.google.com/maps?q=${encodeURIComponent(mapLink)}&output=embed`}
+                className="w-full h-80"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            </div>
+          )}
 
           {prizeInfo && (
             <div className="mt-4 bg-amber-50 border border-amber-200 rounded-xl p-4 max-w-lg mx-auto text-left">
@@ -160,8 +191,9 @@ export default async function HomePage() {
       )}
        
         {guidelineUrls.length > 0 && (
-        <section className="px-4 pb-16 max-w-3xl mx-auto">
+        <section id="guideline-section" className="px-4 pb-16 max-w-3xl mx-auto">
           <h2 className="text-slate-800 text-xl font-bold mb-4">Тэмцээний удирдамж</h2>
+          {guidelineInfo ? <p className="text-slate-600 mb-4">{guidelineInfo}</p> : null}
           <ImageSlider images={guidelineUrls} />
         </section>
       )}
