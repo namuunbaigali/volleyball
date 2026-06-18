@@ -59,6 +59,7 @@ interface TournamentInfo {
   location: string;
   posters: ImageEntry[];
   schedules: ImageEntry[];
+  guideline: ImageEntry[];
   registrationDeadline: string;
   prizeInfo: string;
 }
@@ -83,13 +84,16 @@ export default function AdminPage() {
     schedules: [],
     registrationDeadline: '',
     prizeInfo: '',
+    guideline: [],
   });
   const [savingTournament, setSavingTournament] = useState(false);
   const [tournamentSaved, setTournamentSaved] = useState(false);
   const [uploadingPoster, setUploadingPoster] = useState(false);
   const [uploadingSchedule, setUploadingSchedule] = useState(false);
+  const [uploadingGuideline, setUploadingGuideline] = useState(false);
   const posterInputRef = useRef<HTMLInputElement>(null);
   const scheduleInputRef = useRef<HTMLInputElement>(null);
+  const guidelineInputRef = useRef<HTMLInputElement>(null);
 
   const fetchTeams = useCallback(async (tok: string) => {
     const res = await fetch('/api/admin', { headers: { 'x-admin-key': tok } });
@@ -110,6 +114,7 @@ export default function AdminPage() {
         schedules: data.data.schedules || [],
         registrationDeadline: data.data.registrationDeadline || '',
         prizeInfo: data.data.prizeInfo || '',
+        guideline: data.data.guideline || [],
       });
     }
   }, []);
@@ -181,8 +186,8 @@ export default function AdminPage() {
     setSavingTournament(false);
   };
 
-  const handleImageUpload = async (file: File, type: 'poster' | 'schedule') => {
-    const setter = type === 'poster' ? setUploadingPoster : setUploadingSchedule;
+  const handleImageUpload = async (file: File, type: 'poster' | 'schedule' | 'guideline') => {
+    const setter = type === 'poster' ? setUploadingPoster : type === 'schedule' ? setUploadingSchedule : type=== 'guideline' ? setUploadingGuideline : setUploadingGuideline;
     setter(true);
     try {
       const reader = new FileReader();
@@ -211,7 +216,7 @@ export default function AdminPage() {
     }
   };
 
-  const deleteImage = async (type: 'poster' | 'schedule', index: number) => {
+  const deleteImage = async (type: 'poster' | 'schedule' | 'guideline', index: number) => {
     if (!confirm('Энэ зургийг устгах уу?')) return;
     const res = await fetch('/api/admin/delete-image', {
       method: 'DELETE',
@@ -622,9 +627,10 @@ export default function AdminPage() {
               {[
                 { label: 'Тэмцээний нэр', key: 'title', placeholder: 'Волейбол тэмцээн 2025' },
                 { label: 'Тайлбар', key: 'description', placeholder: 'Тэмцээний тайлбар...' },
-                { label: 'Огноо', key: 'date', placeholder: '2025-06-15' },
+                { label: 'Тэмцээн болох огноо', key: 'date', placeholder: '2025-06-15' },
                 { label: 'Байршил', key: 'location', placeholder: 'UB Sports Center' },
-                { label: 'Бүртгэлийн дэдлайн', key: 'registrationDeadline', placeholder: '2025-06-01T00:00:00' },
+                { label: 'Бүртгэл хаагдах огноо', key: 'registrationDeadline', placeholder: '2025-06-01T00:00:00' },
+                { label: 'Удирдамж', key: 'guideline', placeholder: 'Тэмцээний удирдамж...' },
                 { label: 'Шагналын мэдээлэл', key: 'prizeInfo', placeholder: '1-р байр: ...' },
               ].map((field) => (
                 <div key={field.key}>
@@ -647,7 +653,16 @@ export default function AdminPage() {
                 {tournamentSaved ? 'Хадгалагдлаа!' : savingTournament ? 'Хадгалж байна...' : 'Хадгалах'}
               </button>
             </div>
-
+            {/* Guideline images */}
+            <ImageManager
+              title="Тэмцээний удирдамж"
+              images={tournament.guideline}
+              type="guideline"
+              uploading={uploadingGuideline }
+              inputRef={guidelineInputRef}
+              onUpload={(file) => handleImageUpload(file, 'guideline')}
+              onDelete={(i) => deleteImage('guideline', i)}
+            />
             {/* Poster images */}
             <ImageManager
               title="Тэмцээний постер"
@@ -671,6 +686,8 @@ export default function AdminPage() {
             />
           </div>
         )}
+
+        
       </div>
     </div>
   );
@@ -686,7 +703,7 @@ function ImageManager({
 }: {
   title: string;
   images: { url: string; uploadedAt: string }[];
-  type: 'poster' | 'schedule';
+  type: 'poster' | 'schedule' | 'guideline' ;
   uploading: boolean;
   inputRef: React.RefObject<HTMLInputElement | null>;
   onUpload: (file: File) => void;

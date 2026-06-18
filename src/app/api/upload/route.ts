@@ -10,9 +10,12 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { imageData, type } = body as { imageData: string; type: 'poster' | 'schedule' };
+     console.log('UPLOAD BODY TYPE:', body.type);
+    console.log('IMAGE DATA START:', body.imageData?.slice(0, 50));
+    
+    const { imageData, type } = body as { imageData: string; type: 'poster' | 'schedule' | 'guideline' };
 
-    if (!imageData || !type || !['poster', 'schedule'].includes(type)) {
+    if (!imageData || !type || !['poster', 'schedule','guideline'].includes(type)) {
       return NextResponse.json({ success: false, error: 'Буруу өгөгдөл' }, { status: 400 });
     }
 
@@ -22,7 +25,7 @@ export async function POST(req: NextRequest) {
       tournament = await Tournament.create({});
     }
 
-    const field = type === 'poster' ? 'posters' : 'schedules';
+    const field = type === 'poster' ? 'posters' : type === 'schedule' ? 'schedules' : 'guideline';
     const entry = { url: imageData, uploadedAt: new Date() };
 
     // Prepend new image (newest first), max 10

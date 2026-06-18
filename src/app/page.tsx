@@ -15,6 +15,8 @@ async function getTournament() {
       description?: string;
       date?: string;
       location?: string;
+      guidelineDesc?: string;
+      guideline?:{url:string ; uplaodedAt: Date}[];
       posters?: { url: string; uploadedAt: Date }[];
       schedules?: { url: string; uploadedAt: Date }[];
       registrationDeadline?: string;
@@ -34,10 +36,12 @@ export default async function HomePage() {
     'Улаанбаатар хотын хамгийн том волейбол тэмцээнд тавтай морилно уу. Эрэгтэй болон эмэгтэй ангиллаар баг бүртгүүлж, өрсөлдөөнд оролцоорой!';
   const date = tournament?.date || 'Тодорхойлогдоогүй';
   const location = tournament?.location || 'Тодорхойлогдоогүй';
+  const guidelineDesc = tournament?.guidelineDesc || '';
   const deadline = tournament?.registrationDeadline || '';
   const prizeInfo = tournament?.prizeInfo || '';
   const posterUrls = (tournament?.posters || []).map((p) => p.url);
   const scheduleUrls = (tournament?.schedules || []).map((s) => s.url);
+  const guidelineUrls = (tournament?.guideline || []).map((g) => g.url);
 
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
@@ -117,10 +121,11 @@ export default async function HomePage() {
           </div>
 
           {/* Info cards — зөвхөн тэмцээний огноо, байршил */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-lg mx-auto">
             {[
               { icon: Calendar, label: 'Тэмцээний огноо', value: date },
               { icon: MapPin, label: 'Байршил', value: location },
+              { icon: MapPin, label: 'Удирдамж', value: guidelineDesc || 'Тодорхойлогдоогүй' },
             ].map((item, i) => (
               <div key={i} className="bg-white border border-slate-200 rounded-xl p-4 text-left shadow-sm">
                 <item.icon className="w-4 h-4 text-blue-500 mb-2" />
@@ -151,6 +156,13 @@ export default async function HomePage() {
         <section className="px-4 pb-16 max-w-3xl mx-auto">
           <h2 className="text-slate-800 text-xl font-bold mb-4">Тоглолтын хуваарь</h2>
           <ImageSlider images={scheduleUrls} />
+        </section>
+      )}
+       
+        {guidelineUrls.length > 0 && (
+        <section className="px-4 pb-16 max-w-3xl mx-auto">
+          <h2 className="text-slate-800 text-xl font-bold mb-4">Тэмцээний удирдамж</h2>
+          <ImageSlider images={guidelineUrls} />
         </section>
       )}
 
