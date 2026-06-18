@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Calendar, MapPin, Trophy, Users, ArrowRight, Zap, Medal } from 'lucide-react';
 import connectDB from '@/lib/mongodb';
 import Tournament from '@/models/Tournament';
-import Countdown from '@/components/Countdown';
+import { RegistrationBadge } from '@/components/Countdown';
 import ImageSlider from '@/components/ImageSlider';
 
 async function getTournament() {
@@ -76,12 +76,8 @@ export default async function HomePage() {
         </div>
 
         <div className="relative z-10">
-          <div className="inline-flex items-center gap-2 bg-white border border-slate-200 rounded-full px-4 py-1.5 text-slate-600 text-sm font-medium mb-8 shadow-sm">
-            <span className="relative flex h-2 w-2">
-              <span className="ping-slow absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-            </span>
-            Бүртгэл нээлттэй байна
+          <div className="mb-8">
+            <RegistrationBadge deadline={deadline} />
           </div>
 
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-black tracking-tight mb-6 leading-tight">
@@ -132,12 +128,6 @@ export default async function HomePage() {
             </div>
           )}
 
-          {deadline && (
-            <div className="mt-10 max-w-2xl mx-auto">
-              <p className="text-slate-400 text-xs font-medium mb-4 uppercase tracking-wider">Бүртгэл дуусах хүртэл</p>
-              <Countdown deadline={deadline} />
-            </div>
-          )}
         </div>
       </section>
 
