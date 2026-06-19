@@ -22,7 +22,7 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ success: false, error: 'Тэмцээн олдсонгүй' }, { status: 404 });
     }
 
-    const field = type === 'poster' ? 'posters' : type === 'schedule' ? 'schedules' : 'guideline';
+    const field = type === 'poster' ? 'posters' : type === 'schedule' ? 'schedules' : 'guidelines';
     const arr = [...(tournament[field] as { url: string; uploadedAt: Date }[])];
 
     if (index < 0 || index >= arr.length) {

@@ -129,9 +129,22 @@ export default async function HomePage() {
           />
 
           {prizeInfo && (
-            <div className="mt-4 bg-amber-50 border border-amber-200 rounded-xl p-4 max-w-lg mx-auto text-left">
-              <p className="text-amber-600 text-xs font-semibold uppercase tracking-wider mb-1">Шагнал</p>
-              <p className="text-slate-700 text-sm">{prizeInfo}</p>
+            <div className="mt-6 max-w-lg mx-auto">
+              <div className="relative overflow-hidden rounded-2xl border border-amber-200/60 bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 p-5 text-left shadow-sm shadow-amber-100/50">
+                {/* Decorative arc */}
+                <svg className="absolute -top-6 -right-6 w-28 h-28 opacity-20" viewBox="0 0 120 120" fill="none">
+                  <circle cx="100" cy="20" r="60" stroke="#F59E0B" strokeWidth="20" fill="none"/>
+                </svg>
+                <div className="flex items-start gap-3 relative z-10">
+                  <div className="w-9 h-9 bg-amber-100 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
+                    <Trophy className="w-4 h-4 text-amber-500" />
+                  </div>
+                  <div>
+                    <p className="text-amber-600 text-xs font-bold uppercase tracking-wider mb-1">Шагнал мэдээлэл</p>
+                    <p className="text-slate-700 text-sm leading-relaxed">{prizeInfo}</p>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 

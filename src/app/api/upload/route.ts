@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
       tournament = await Tournament.create({});
     }
 
-    const field = type === 'poster' ? 'posters' : type === 'schedule' ? 'schedules' : 'guideline';
+    const field = type === 'poster' ? 'posters' : type === 'schedule' ? 'schedules' : 'guidelines';
     const entry = { url: imageData, uploadedAt: new Date() };
 
     // Prepend new image (newest first), max 10

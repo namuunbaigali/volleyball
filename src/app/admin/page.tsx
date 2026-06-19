@@ -192,8 +192,8 @@ export default function AdminPage() {
     setSavingTournament(false);
   };
 
-  const handleImageUpload = async (file: File, type: 'poster' | 'schedule') => {
-    const setter = type === 'poster' ? setUploadingPoster : setUploadingSchedule;
+  const handleImageUpload = async (file: File, type: 'poster' | 'schedule' | 'guideline') => {
+    const setter = type === 'poster' ? setUploadingPoster : type === 'schedule' ? setUploadingSchedule : setUploadingGuideline;
     setter(true);
     try {
       const reader = new FileReader();
@@ -222,7 +222,7 @@ export default function AdminPage() {
     }
   };
 
-  const deleteImage = async (type: 'poster' | 'schedule', index: number) => {
+  const deleteImage = async (type: 'poster' | 'schedule' | 'guideline', index: number) => {
     if (!confirm('Энэ зургийг устгах уу?')) return;
     const res = await fetch('/api/admin/delete-image', {
       method: 'DELETE',
@@ -646,8 +646,9 @@ export default function AdminPage() {
               {[
                 { label: 'Тэмцээний нэр', key: 'title', placeholder: 'Волейбол тэмцээн 2025' },
                 { label: 'Тайлбар', key: 'description', placeholder: 'Тэмцээний тайлбар...' },
-                { label: 'Огноо', key: 'date', placeholder: '2025-06-15' },
-                { label: 'Байршил', key: 'location', placeholder: 'UB Sports Center' },
+                { label: 'Тэмцээний огноо', key: 'date', placeholder: '2025-06-15' },
+                { label: 'Байршил (нэр)', key: 'location', placeholder: 'UB Sports Center' },
+                { label: 'Google Maps линк', key: 'googleMapsUrl', placeholder: 'https://maps.google.com/...' },
                 { label: 'Бүртгэлийн дэдлайн', key: 'registrationDeadline', placeholder: '2025-06-01T00:00:00' },
                 { label: 'Шагналын мэдээлэл', key: 'prizeInfo', placeholder: '1-р байр: ...' },
               ].map((field) => (
@@ -662,6 +663,16 @@ export default function AdminPage() {
                   />
                 </div>
               ))}
+              <div>
+                <label className="block text-slate-600 text-sm font-medium mb-1.5">Удирдамжийн нэмэлт тайлбар</label>
+                <textarea
+                  value={tournament.guidelinesNote}
+                  onChange={(e) => setTournament((prev) => ({ ...prev, guidelinesNote: e.target.value }))}
+                  placeholder="Удирдамжийн талаарх нэмэлт мэдээлэл..."
+                  rows={3}
+                  className="w-full bg-white border border-slate-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 rounded-xl px-4 py-3 text-slate-800 placeholder-slate-400 outline-none transition-all text-sm resize-none"
+                />
+              </div>
               <button
                 onClick={saveTournament}
                 disabled={savingTournament}
@@ -693,6 +704,17 @@ export default function AdminPage() {
               onUpload={(file) => handleImageUpload(file, 'schedule')}
               onDelete={(i) => deleteImage('schedule', i)}
             />
+
+            {/* Guideline images */}
+            <ImageManager
+              title="Удирдамж"
+              images={tournament.guidelines}
+              type="guideline"
+              uploading={uploadingGuideline}
+              inputRef={guidelineInputRef}
+              onUpload={(file) => handleImageUpload(file, 'guideline')}
+              onDelete={(i) => deleteImage('guideline', i)}
+            />
           </div>
         )}
       </div>
@@ -710,7 +732,7 @@ function ImageManager({
 }: {
   title: string;
   images: { url: string; uploadedAt: string }[];
-  type: 'poster' | 'schedule';
+  type: 'poster' | 'schedule' | 'guideline';
   uploading: boolean;
   inputRef: React.RefObject<HTMLInputElement | null>;
   onUpload: (file: File) => void;
