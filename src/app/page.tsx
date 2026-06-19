@@ -131,7 +131,6 @@ export default async function HomePage() {
           {prizeInfo && (
             <div className="mt-6 max-w-lg mx-auto">
               <div className="relative overflow-hidden rounded-2xl border border-amber-200/60 bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 p-5 text-left shadow-sm shadow-amber-100/50">
-                {/* Decorative arc */}
                 <svg className="absolute -top-6 -right-6 w-28 h-28 opacity-20" viewBox="0 0 120 120" fill="none">
                   <circle cx="100" cy="20" r="60" stroke="#F59E0B" strokeWidth="20" fill="none"/>
                 </svg>
@@ -139,9 +138,16 @@ export default async function HomePage() {
                   <div className="w-9 h-9 bg-amber-100 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
                     <Trophy className="w-4 h-4 text-amber-500" />
                   </div>
-                  <div>
-                    <p className="text-amber-600 text-xs font-bold uppercase tracking-wider mb-1">Шагнал мэдээлэл</p>
-                    <p className="text-slate-700 text-sm leading-relaxed">{prizeInfo}</p>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-amber-600 text-xs font-bold uppercase tracking-wider mb-2">Шагнал мэдээлэл</p>
+                    <ul className="space-y-1">
+                      {prizeInfo.split('\n').filter(Boolean).map((line, i) => (
+                        <li key={i} className="flex items-start gap-2 text-slate-700 text-sm leading-relaxed">
+                          <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
+                          {line.replace(/^[-•*]\s*/, '')}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               </div>
