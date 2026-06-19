@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'VB2025',
+  title: 'VB2020',
   description: 'Волейбол тэмцээний багийн бүртгэл',
   icons: {
     icon: '/volleyball.svg',

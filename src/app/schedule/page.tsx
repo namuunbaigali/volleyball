@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Clock, MapPin, AlertTriangle, CheckCircle, Play, Calendar } from 'lucide-react';
+import { Clock, MapPin, AlertTriangle, CheckCircle, Play, Calendar, ChevronLeft, ChevronRight, Image as ImageIcon } from 'lucide-react';
 
 interface IMatch {
   _id: string;
@@ -31,14 +31,73 @@ function formatTime(iso: string) {
   return d.toLocaleString('mn-MN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
 
+function ScheduleImages({ images }: { images: string[] }) {
+  const [idx, setIdx] = useState(0);
+
+  if (images.length === 0) return null;
+
+  return (
+    <div className="mb-10 bg-white border border-slate-200 rounded-2xl overflow-hidden">
+      <div className="flex items-center gap-2 px-5 py-4 border-b border-slate-100">
+        <ImageIcon className="w-4 h-4 text-blue-500" />
+        <h2 className="font-bold text-slate-800 text-sm">Хуваарийн зураг</h2>
+        {images.length > 1 && (
+          <span className="ml-auto text-xs text-slate-400 font-medium">{idx + 1} / {images.length}</span>
+        )}
+      </div>
+      <div className="relative">
+        <img
+          src={images[idx]}
+          alt={`Хуваарь ${idx + 1}`}
+          className="w-full object-contain max-h-[70vh]"
+        />
+        {images.length > 1 && (
+          <>
+            <button
+              onClick={() => setIdx(i => Math.max(0, i - 1))}
+              disabled={idx === 0}
+              className="absolute left-3 top-1/2 -translate-y-1/2 p-2 rounded-xl bg-white/90 border border-slate-200 shadow hover:bg-white disabled:opacity-30 transition-all"
+            >
+              <ChevronLeft className="w-5 h-5 text-slate-700" />
+            </button>
+            <button
+              onClick={() => setIdx(i => Math.min(images.length - 1, i + 1))}
+              disabled={idx === images.length - 1}
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-xl bg-white/90 border border-slate-200 shadow hover:bg-white disabled:opacity-30 transition-all"
+            >
+              <ChevronRight className="w-5 h-5 text-slate-700" />
+            </button>
+            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+              {images.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setIdx(i)}
+                  className={`w-2 h-2 rounded-full transition-all ${i === idx ? 'bg-blue-600 w-4' : 'bg-slate-300 hover:bg-slate-400'}`}
+                />
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function SchedulePage() {
   const [matches, setMatches] = useState<IMatch[]>([]);
+  const [scheduleImages, setScheduleImages] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState('Бүгд');
 
   useEffect(() => {
-    fetch('/api/matches').then(r => r.json()).then(d => {
-      if (d.success) setMatches(d.data);
+    Promise.all([
+      fetch('/api/matches').then(r => r.json()),
+      fetch('/api/tournament').then(r => r.json()),
+    ]).then(([matchData, tournamentData]) => {
+      if (matchData.success) setMatches(matchData.data);
+      if (tournamentData.success && tournamentData.data?.schedules) {
+        setScheduleImages(tournamentData.data.schedules.map((s: { url: string }) => s.url));
+      }
       setLoading(false);
     });
   }, []);
@@ -53,6 +112,8 @@ export default function SchedulePage() {
           <h1 className="text-4xl font-black text-slate-800 mb-2">Тоглолтын хуваарь</h1>
           <p className="text-slate-500">Тэмцээний бүх тоглолтын хуваарь</p>
         </div>
+
+        <ScheduleImages images={scheduleImages} />
 
         {/* Category tabs */}
         {categories.length > 1 && (

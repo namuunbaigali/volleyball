@@ -473,6 +473,17 @@ export default function AdminPage() {
 
         {activeTab === 'schedule' && (
           <div className="space-y-4">
+            {/* Schedule images */}
+            <ImageManager
+              title="Хуваарийн зураг"
+              images={tournament.schedules}
+              type="schedule"
+              uploading={uploadingSchedule}
+              inputRef={scheduleInputRef}
+              onUpload={(file) => handleImageUpload(file, 'schedule')}
+              onDelete={(i) => deleteImage('schedule', i)}
+            />
+
             <div className="flex items-center justify-between">
               <p className="text-slate-500 text-sm">{matches.length} тоглолт бүртгэгдсэн</p>
               <button onClick={() => setShowNewMatchForm(!showNewMatchForm)}
@@ -692,17 +703,6 @@ export default function AdminPage() {
               inputRef={posterInputRef}
               onUpload={(file) => handleImageUpload(file, 'poster')}
               onDelete={(i) => deleteImage('poster', i)}
-            />
-
-            {/* Schedule images */}
-            <ImageManager
-              title="Тоглолтын хуваарь"
-              images={tournament.schedules}
-              type="schedule"
-              uploading={uploadingSchedule}
-              inputRef={scheduleInputRef}
-              onUpload={(file) => handleImageUpload(file, 'schedule')}
-              onDelete={(i) => deleteImage('schedule', i)}
             />
 
             {/* Guideline images */}
