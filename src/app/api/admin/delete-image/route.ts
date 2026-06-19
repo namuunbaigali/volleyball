@@ -10,9 +10,9 @@ export async function DELETE(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { type, index } = body as { type: 'poster' | 'schedule'; index: number };
+    const { type, index } = body as { type: 'poster' | 'schedule' | 'guideline'; index: number };
 
-    if (!type || !['poster', 'schedule'].includes(type) || typeof index !== 'number') {
+    if (!type || !['poster', 'schedule', 'guideline'].includes(type) || typeof index !== 'number') {
       return NextResponse.json({ success: false, error: 'Буруу өгөгдөл' }, { status: 400 });
     }
 
@@ -22,7 +22,7 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ success: false, error: 'Тэмцээн олдсонгүй' }, { status: 404 });
     }
 
-    const field = type === 'poster' ? 'posters' : 'schedules';
+    const field = type === 'poster' ? 'posters' : type === 'schedule' ? 'schedules' : 'guideline';
     const arr = [...(tournament[field] as { url: string; uploadedAt: Date }[])];
 
     if (index < 0 || index >= arr.length) {

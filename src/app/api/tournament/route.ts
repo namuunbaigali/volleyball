@@ -26,7 +26,7 @@ export async function PUT(req: NextRequest) {
 
     const body = await req.json();
     // Only allow updating non-array fields via PUT; images managed via /api/upload
-    const allowedFields = ['title', 'description', 'date', 'location', 'registrationDeadline', 'prizeInfo'];
+    const allowedFields = ['title', 'description', 'date', 'location', 'locationMapLink', 'guidelineInfo', 'registrationDeadline', 'prizeInfo'];
     const update: Record<string, string> = {};
     for (const key of allowedFields) {
       if (key in body) update[key] = body[key];

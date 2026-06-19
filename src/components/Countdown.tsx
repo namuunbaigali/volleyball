@@ -16,7 +16,7 @@ function getTimeLeft(deadline: string) {
 }
 
 export function RegistrationBadge({ deadline }: { deadline?: string }) {
-  const [timeLeft, setTimeLeft] = useState(() => deadline ? getTimeLeft(deadline) : null);
+  const [timeLeft, setTimeLeft] = useState<ReturnType<typeof getTimeLeft> | null>(null);
 
   useEffect(() => {
     if (!deadline) return;
@@ -25,6 +25,18 @@ export function RegistrationBadge({ deadline }: { deadline?: string }) {
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
   }, [deadline]);
+
+  if (deadline && timeLeft === null) {
+    return (
+      <div className="inline-flex items-center gap-2.5 bg-white border border-slate-200 rounded-full px-4 py-2 shadow-sm text-sm font-medium flex-wrap justify-center">
+        <span className="relative flex h-2 w-2 shrink-0">
+          <span className="ping-slow absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
+        </span>
+        <span className="text-slate-700">Бүртгэл нээлттэй байна</span>
+      </div>
+    );
+  }
 
   if (deadline && !timeLeft) {
     return (
@@ -58,7 +70,7 @@ export function RegistrationBadge({ deadline }: { deadline?: string }) {
 }
 
 export default function Countdown({ deadline }: { deadline: string }) {
-  const [timeLeft, setTimeLeft] = useState(() => getTimeLeft(deadline));
+  const [timeLeft, setTimeLeft] = useState<ReturnType<typeof getTimeLeft> | null>(null);
 
   useEffect(() => {
     const tick = () => setTimeLeft(getTimeLeft(deadline));
@@ -68,6 +80,18 @@ export default function Countdown({ deadline }: { deadline: string }) {
   }, [deadline]);
 
   if (!deadline) return null;
+
+  if (timeLeft === null) {
+    return (
+      <div className="inline-flex items-center gap-2.5 bg-white border border-slate-200 rounded-full px-4 py-2 shadow-sm text-sm font-medium flex-wrap justify-center">
+        <span className="relative flex h-2 w-2 shrink-0">
+          <span className="ping-slow absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
+        </span>
+        <span className="text-slate-700">Бүртгэл нээлттэй байна</span>
+      </div>
+    );
+  }
 
   if (!timeLeft) {
     return (
