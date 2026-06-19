@@ -38,7 +38,7 @@ export default async function HomePage() {
   const deadline = tournament?.registrationDeadline || '';
   const prizeInfo = tournament?.prizeInfo || '';
   const posterUrls = (tournament?.posters || []).map((p) => p.url);
-  const scheduleUrls = (tournament?.schedules || []).map((s) => s.url);
+
   const guidelineUrls = ((tournament as { guidelines?: { url: string }[] })?.guidelines || []).map((g) => g.url);
   const googleMapsUrl = (tournament as { googleMapsUrl?: string })?.googleMapsUrl || '';
   const guidelinesNote = (tournament as { guidelinesNote?: string })?.guidelinesNote || '';
@@ -161,13 +161,6 @@ export default async function HomePage() {
         <section className="px-4 pb-16 max-w-3xl mx-auto">
           <h2 className="text-slate-800 text-xl font-bold mb-4">Тэмцээний зар</h2>
           <ImageSlider images={posterUrls} />
-        </section>
-      )}
-
-      {scheduleUrls.length > 0 && (
-        <section className="px-4 pb-16 max-w-3xl mx-auto">
-          <h2 className="text-slate-800 text-xl font-bold mb-4">Тоглолтын хуваарь</h2>
-          <ImageSlider images={scheduleUrls} />
         </section>
       )}
 
