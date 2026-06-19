@@ -10,8 +10,11 @@ export interface ITournament extends Document {
   description: string;
   date: string;
   location: string;
+  googleMapsUrl: string;
   posters: IImageEntry[];
   schedules: IImageEntry[];
+  guidelines: IImageEntry[];
+  guidelinesNote: string;
   registrationDeadline: string;
   prizeInfo: string;
   updatedAt: Date;
@@ -28,8 +31,11 @@ const TournamentSchema = new Schema<ITournament>(
     description: { type: String, default: '' },
     date: { type: String, default: '' },
     location: { type: String, default: '' },
+    googleMapsUrl: { type: String, default: '' },
     posters: { type: [ImageEntrySchema], default: [] },
     schedules: { type: [ImageEntrySchema], default: [] },
+    guidelines: { type: [ImageEntrySchema], default: [] },
+    guidelinesNote: { type: String, default: '' },
     registrationDeadline: { type: String, default: '' },
     prizeInfo: { type: String, default: '' },
   },

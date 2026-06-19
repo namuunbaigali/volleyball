@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Plus, Trash2, CheckCircle, AlertCircle, ChevronDown } from 'lucide-react';
 
 interface Member {
@@ -26,21 +26,62 @@ const emptyMember = (gender: 'male' | 'female' = 'male'): Member => ({
   firstName: '', lastName: '', graduationYear: '', teacherName: '', phone: '', age: '', gender,
 });
 
-const InputField = ({ label, value, onChange, type = 'text', placeholder, required }: {
+function InputField({ label, value, onChange, type = 'text', placeholder, required }: {
   label: string; value: string; onChange: (v: string) => void;
   type?: string; placeholder?: string; required?: boolean;
-}) => (
-  <div>
-    <label className="block text-slate-600 text-sm font-medium mb-1.5">
-      {label} {required && <span className="text-blue-500">*</span>}
-    </label>
-    <input
-      type={type} value={value} onChange={(e) => onChange(e.target.value)}
-      placeholder={placeholder} required={required}
-      className="w-full bg-white border border-slate-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 rounded-xl px-4 py-3 text-slate-800 placeholder-slate-400 outline-none transition-all text-sm"
-    />
-  </div>
-);
+}) {
+  return (
+    <div>
+      <label className="block text-slate-600 text-sm font-medium mb-1.5">
+        {label} {required && <span className="text-blue-500">*</span>}
+      </label>
+      <input
+        type={type} value={value} onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder} required={required}
+        className="w-full bg-white border border-slate-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 rounded-xl px-4 py-3 text-slate-800 placeholder-slate-400 outline-none transition-all text-sm"
+      />
+    </div>
+  );
+}
+
+function MemberCard({ member, index, canRemove, onUpdate, onRemove }: {
+  member: Member; index: number; canRemove: boolean;
+  onUpdate: (i: number, f: keyof Member, v: string) => void;
+  onRemove: (i: number) => void;
+}) {
+  return (
+    <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5">
+      <div className="flex items-center justify-between mb-4">
+        <span className="text-blue-600 text-sm font-bold">#{index + 1} гишүүн</span>
+        {canRemove && (
+          <button type="button" onClick={() => onRemove(index)}
+            className="text-slate-400 hover:text-red-500 p-1 rounded-lg transition-colors">
+            <Trash2 className="w-4 h-4" />
+          </button>
+        )}
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <InputField label="Овог" value={member.lastName} onChange={(v) => onUpdate(index, 'lastName', v)} placeholder="Овог" required />
+        <InputField label="Нэр" value={member.firstName} onChange={(v) => onUpdate(index, 'firstName', v)} placeholder="Нэр" required />
+        <InputField label="Төгссөн он" value={member.graduationYear} onChange={(v) => onUpdate(index, 'graduationYear', v)} type="number" placeholder="2020" required />
+        <InputField label="Багшийн нэр" value={member.teacherName} onChange={(v) => onUpdate(index, 'teacherName', v)} placeholder="Багшийн нэр" required />
+        <InputField label="Утас" value={member.phone} onChange={(v) => onUpdate(index, 'phone', v)} type="tel" placeholder="99001234" required />
+        <InputField label="Нас" value={member.age} onChange={(v) => onUpdate(index, 'age', v)} type="number" placeholder="25" required />
+        <div>
+          <label className="block text-slate-600 text-sm font-medium mb-1.5">Хүйс <span className="text-blue-500">*</span></label>
+          <div className="relative">
+            <select value={member.gender} onChange={(e) => onUpdate(index, 'gender', e.target.value)}
+              className="w-full bg-white border border-slate-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 rounded-xl px-4 py-3 text-slate-800 outline-none text-sm appearance-none cursor-pointer">
+              <option value="male">Эрэгтэй</option>
+              <option value="female">Эмэгтэй</option>
+            </select>
+            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function RegisterPage() {
   const [category, setCategory] = useState<CategoryKey>('v_male');
@@ -61,20 +102,20 @@ export default function RegisterPage() {
     setMembers(Array.from({ length: 6 }, () => emptyMember()));
   };
 
-  const updateMember = (index: number, field: keyof Member, value: string) => {
+  const updateMember = useCallback((index: number, field: keyof Member, value: string) => {
     setMembers((prev) => prev.map((m, i) => (i === index ? { ...m, [field]: value } : m)));
-  };
+  }, []);
+
+  const removeMember = useCallback((index: number) => {
+    setMembers((prev) => prev.filter((_, i) => i !== index));
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setSubmitting(true);
-
-    const allMembers = members;
-
     const tournamentType = category === 'soft' ? 'soft_volleyball' : category === 'mixed' ? 'mixed' : 'volleyball';
     const teamGender = category === 'v_male' ? 'male' : category === 'v_female' ? 'female' : 'mixed';
-
     try {
       const res = await fetch('/api/teams', {
         method: 'POST',
@@ -82,7 +123,7 @@ export default function RegisterPage() {
         body: JSON.stringify({
           teamName, school, contactPhone, contactEmail,
           teamGender, tournamentType,
-          members: allMembers.map((m) => ({ ...m, age: parseInt(m.age), graduationYear: parseInt(m.graduationYear) })),
+          members: members.map((m) => ({ ...m, age: parseInt(m.age), graduationYear: parseInt(m.graduationYear) })),
         }),
       });
       const data = await res.json();
@@ -102,45 +143,6 @@ export default function RegisterPage() {
     setCategory('v_male');
   };
 
-  const MemberCard = ({ member, index, onUpdate, label }: {
-    member: Member; index: number;
-    onUpdate: (i: number, f: keyof Member, v: string) => void;
-    label?: string;
-  }) => (
-    <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5">
-      <div className="flex items-center justify-between mb-4">
-        <span className="text-blue-600 text-sm font-bold">{label || `#${index + 1} гишүүн`}</span>
-        {members.length > minMembers && (
-          <button type="button" onClick={() => setMembers(p => p.filter((_, i) => i !== index))}
-            className="text-slate-400 hover:text-red-500 p-1 rounded-lg transition-colors">
-            <Trash2 className="w-4 h-4" />
-          </button>
-        )}
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <InputField label="Овог" value={member.lastName} onChange={(v) => onUpdate(index, 'lastName', v)} placeholder="Овог" required />
-        <InputField label="Нэр" value={member.firstName} onChange={(v) => onUpdate(index, 'firstName', v)} placeholder="Нэр" required />
-        <InputField label="Төгссөн он" value={member.graduationYear} onChange={(v) => onUpdate(index, 'graduationYear', v)} type="number" placeholder="2020" required />
-        <InputField label="Багшийн нэр" value={member.teacherName} onChange={(v) => onUpdate(index, 'teacherName', v)} placeholder="Багшийн нэр" required />
-        <InputField label="Утас" value={member.phone} onChange={(v) => onUpdate(index, 'phone', v)} type="tel" placeholder="99001234" required />
-        <InputField label="Нас" value={member.age} onChange={(v) => onUpdate(index, 'age', v)} type="number" placeholder="25" required />
-        {(
-          <div>
-            <label className="block text-slate-600 text-sm font-medium mb-1.5">Хүйс <span className="text-blue-500">*</span></label>
-            <div className="relative">
-              <select value={member.gender} onChange={(e) => onUpdate(index, 'gender', e.target.value)}
-                className="w-full bg-white border border-slate-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 rounded-xl px-4 py-3 text-slate-800 outline-none text-sm appearance-none cursor-pointer">
-                <option value="male">Эрэгтэй</option>
-                <option value="female">Эмэгтэй</option>
-              </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-
   if (success) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center px-4">
@@ -151,7 +153,7 @@ export default function RegisterPage() {
           <h1 className="text-3xl font-black text-slate-800 mb-3">Амжилттай бүртгэгдлээ!</h1>
           <p className="text-slate-500 mb-8">Таны багийн бүртгэл хүлээн авагдлаа. Админ баталгаажуулсны дараа харагдана.</p>
           <button onClick={resetForm}
-            className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-bold px-8 py-3 rounded-2xl transition-all hover:scale-105">
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-3 rounded-xl transition-colors">
             Дахин бүртгүүлэх
           </button>
         </div>
@@ -172,13 +174,12 @@ export default function RegisterPage() {
           <div className="bg-white border border-slate-200 rounded-xl p-6">
             <h2 className="text-slate-800 font-bold text-lg mb-4">Тэмцээний төрөл</h2>
             <div className="grid grid-cols-2 gap-3">
-              {CATEGORIES.map((cat, i) => (
+              {CATEGORIES.map((cat) => (
                 <button key={cat.key} type="button" onClick={() => handleCategoryChange(cat.key)}
-                  style={{ animationDelay: `${i * 0.08}s` }}
-                  className={`bounce-in flex flex-col items-center justify-center p-5 rounded-2xl border-2 transition-all duration-200 ${
+                  className={`flex flex-col items-center justify-center p-5 rounded-2xl border-2 transition-all duration-200 ${
                     category === cat.key
-                      ? `${cat.borderColor} ${cat.bgColor} text-slate-800 shadow-md`
-                      : 'border-slate-200 bg-white text-slate-500 hover:border-blue-200 hover:bg-blue-50/50 hover:scale-105'
+                      ? `${cat.borderColor} ${cat.bgColor} text-slate-800`
+                      : 'border-slate-200 bg-white text-slate-500 hover:border-blue-200 hover:bg-blue-50/50'
                   }`}>
                   <span className="text-2xl mb-2">{cat.icon}</span>
                   <span className="font-bold text-sm text-center">{cat.label}</span>
@@ -204,38 +205,38 @@ export default function RegisterPage() {
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h2 className="text-slate-800 font-bold text-lg">Гишүүдийн мэдээлэл</h2>
-                {(
-                  <p className="text-slate-500 text-sm mt-0.5">
-                    {members.length}/{maxMembers} гишүүн
-                    {members.length < minMembers && <span className="text-red-500"> (хамгийн багадаа {minMembers})</span>}
-                  </p>
-                )}
+                <p className="text-slate-500 text-sm mt-0.5">
+                  {members.length}/{maxMembers} гишүүн
+                  {members.length < minMembers && <span className="text-red-500"> (хамгийн багадаа {minMembers})</span>}
+                </p>
               </div>
               {members.length < maxMembers && (
                 <button type="button" onClick={() => setMembers(p => [...p, emptyMember()])}
-                  className="flex items-center gap-2 bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-600 text-sm font-semibold px-4 py-2 rounded-xl transition-all hover:scale-105">
+                  className="flex items-center gap-2 bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-600 text-sm font-semibold px-4 py-2 rounded-xl transition-colors">
                   <Plus className="w-4 h-4" />
                   Нэмэх
                 </button>
               )}
             </div>
-
             <div className="space-y-4">
               {members.map((member, i) => (
-                <MemberCard key={i} member={member} index={i} onUpdate={updateMember} />
+                <MemberCard key={i} member={member} index={i}
+                  canRemove={members.length > minMembers}
+                  onUpdate={updateMember}
+                  onRemove={removeMember} />
               ))}
             </div>
           </div>
 
           {error && (
-            <div className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-2xl p-4 text-red-600">
+            <div className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-xl p-4 text-red-600">
               <AlertCircle className="w-5 h-5 shrink-0" />
               {error}
             </div>
           )}
 
           <button type="submit" disabled={submitting || members.length < minMembers}
-            className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 disabled:opacity-40 disabled:cursor-not-allowed text-white font-black py-4 rounded-2xl transition-all duration-200  text-lg">
+            className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-black py-4 rounded-xl transition-colors text-lg">
             {submitting ? '⏳ Бүртгэж байна...' : '🏐 Баг бүртгүүлэх'}
           </button>
         </form>

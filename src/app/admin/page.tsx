@@ -57,8 +57,11 @@ interface TournamentInfo {
   description: string;
   date: string;
   location: string;
+  googleMapsUrl: string;
   posters: ImageEntry[];
   schedules: ImageEntry[];
+  guidelines: ImageEntry[];
+  guidelinesNote: string;
   registrationDeadline: string;
   prizeInfo: string;
 }
@@ -79,8 +82,11 @@ export default function AdminPage() {
     description: '',
     date: '',
     location: '',
+    googleMapsUrl: '',
     posters: [],
     schedules: [],
+    guidelines: [],
+    guidelinesNote: '',
     registrationDeadline: '',
     prizeInfo: '',
   });
@@ -88,8 +94,10 @@ export default function AdminPage() {
   const [tournamentSaved, setTournamentSaved] = useState(false);
   const [uploadingPoster, setUploadingPoster] = useState(false);
   const [uploadingSchedule, setUploadingSchedule] = useState(false);
+  const [uploadingGuideline, setUploadingGuideline] = useState(false);
   const posterInputRef = useRef<HTMLInputElement>(null);
   const scheduleInputRef = useRef<HTMLInputElement>(null);
+  const guidelineInputRef = useRef<HTMLInputElement>(null);
 
   const fetchTeams = useCallback(async (tok: string) => {
     const res = await fetch('/api/admin', { headers: { 'x-admin-key': tok } });
@@ -106,8 +114,11 @@ export default function AdminPage() {
         description: data.data.description || '',
         date: data.data.date || '',
         location: data.data.location || '',
+        googleMapsUrl: data.data.googleMapsUrl || '',
         posters: data.data.posters || [],
         schedules: data.data.schedules || [],
+        guidelines: data.data.guidelines || [],
+        guidelinesNote: data.data.guidelinesNote || '',
         registrationDeadline: data.data.registrationDeadline || '',
         prizeInfo: data.data.prizeInfo || '',
       });
@@ -166,8 +177,8 @@ export default function AdminPage() {
 
   const saveTournament = async () => {
     setSavingTournament(true);
-    const { posters, schedules, ...fields } = tournament;
-    void posters; void schedules;
+    const { posters, schedules, guidelines, ...fields } = tournament;
+    void posters; void schedules; void guidelines;
     const res = await fetch('/api/tournament', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'x-admin-key': token },
@@ -474,20 +485,33 @@ export default function AdminPage() {
               <div className="bg-white border border-blue-200 rounded-2xl p-5 space-y-3 shadow-md shadow-blue-50">
                 <h3 className="text-slate-800 font-bold">Шинэ тоглолт</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {[
-                    { label: '1-р баг', key: 'team1Name', placeholder: 'Багийн нэр' },
-                    { label: '2-р баг', key: 'team2Name', placeholder: 'Багийн нэр' },
-                    { label: 'Талбай', key: 'court', placeholder: '1-р талбай' },
-                    { label: 'Дараалал', key: 'order', placeholder: '1', type: 'number' },
-                  ].map(f => (
-                    <div key={f.key}>
-                      <label className="block text-slate-500 text-xs mb-1">{f.label}</label>
-                      <input type={f.type || 'text'} placeholder={f.placeholder}
-                        value={String(newMatch[f.key as keyof typeof newMatch])}
-                        onChange={e => setNewMatch(p => ({ ...p, [f.key]: f.type === 'number' ? parseInt(e.target.value) || 0 : e.target.value }))}
-                        className="w-full bg-white border border-slate-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 rounded-xl px-3 py-2.5 text-slate-800 text-sm outline-none placeholder-slate-400" />
+                  {(['team1Name', 'team2Name'] as const).map((key, idx) => (
+                    <div key={key}>
+                      <label className="block text-slate-500 text-xs mb-1">{idx === 0 ? '1-р баг' : '2-р баг'}</label>
+                      <select value={newMatch[key]}
+                        onChange={e => setNewMatch(p => ({ ...p, [key]: e.target.value }))}
+                        className="w-full bg-white border border-slate-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 rounded-xl px-3 py-2.5 text-slate-800 text-sm outline-none appearance-none">
+                        <option value="">— Баг сонгох —</option>
+                        {teams.map(t => (
+                          <option key={t._id} value={t.teamName}>{t.teamName} ({t.school})</option>
+                        ))}
+                      </select>
                     </div>
                   ))}
+                  <div>
+                    <label className="block text-slate-500 text-xs mb-1">Талбай</label>
+                    <input type="text" placeholder="1-р талбай"
+                      value={newMatch.court}
+                      onChange={e => setNewMatch(p => ({ ...p, court: e.target.value }))}
+                      className="w-full bg-white border border-slate-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 rounded-xl px-3 py-2.5 text-slate-800 text-sm outline-none placeholder-slate-400" />
+                  </div>
+                  <div>
+                    <label className="block text-slate-500 text-xs mb-1">Дараалал</label>
+                    <input type="number" placeholder="1"
+                      value={newMatch.order}
+                      onChange={e => setNewMatch(p => ({ ...p, order: parseInt(e.target.value) || 0 }))}
+                      className="w-full bg-white border border-slate-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 rounded-xl px-3 py-2.5 text-slate-800 text-sm outline-none placeholder-slate-400" />
+                  </div>
                   <div>
                     <label className="block text-slate-500 text-xs mb-1">Ангилал</label>
                     <select value={newMatch.category} onChange={e => setNewMatch(p => ({ ...p, category: e.target.value }))}
@@ -504,7 +528,7 @@ export default function AdminPage() {
                 </div>
                 <div className="flex gap-2">
                   <button onClick={createMatch}
-                    className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-colors shadow-sm">
+                    className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-colors">
                     Хадгалах
                   </button>
                   <button onClick={() => setShowNewMatchForm(false)}

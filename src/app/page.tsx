@@ -1,9 +1,10 @@
 import Link from 'next/link';
-import { Calendar, MapPin, Trophy, Users, ArrowRight, Zap, Medal } from 'lucide-react';
+import { Trophy, Users, ArrowRight, Zap, Medal } from 'lucide-react';
 import connectDB from '@/lib/mongodb';
 import Tournament from '@/models/Tournament';
 import { RegistrationBadge } from '@/components/Countdown';
 import ImageSlider from '@/components/ImageSlider';
+import InfoCards from '@/components/InfoCards';
 
 async function getTournament() {
   try {
@@ -38,6 +39,9 @@ export default async function HomePage() {
   const prizeInfo = tournament?.prizeInfo || '';
   const posterUrls = (tournament?.posters || []).map((p) => p.url);
   const scheduleUrls = (tournament?.schedules || []).map((s) => s.url);
+  const guidelineUrls = ((tournament as { guidelines?: { url: string }[] })?.guidelines || []).map((g) => g.url);
+  const googleMapsUrl = (tournament as { googleMapsUrl?: string })?.googleMapsUrl || '';
+  const guidelinesNote = (tournament as { guidelinesNote?: string })?.guidelinesNote || '';
 
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
@@ -116,19 +120,13 @@ export default async function HomePage() {
             </Link>
           </div>
 
-          {/* Info cards — зөвхөн тэмцээний огноо, байршил */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg mx-auto">
-            {[
-              { icon: Calendar, label: 'Тэмцээний огноо', value: date },
-              { icon: MapPin, label: 'Байршил', value: location },
-            ].map((item, i) => (
-              <div key={i} className="bg-white border border-slate-200 rounded-xl p-4 text-left shadow-sm">
-                <item.icon className="w-4 h-4 text-blue-500 mb-2" />
-                <p className="text-slate-400 text-xs font-medium uppercase tracking-wider mb-1">{item.label}</p>
-                <p className="text-slate-800 font-semibold text-sm">{item.value}</p>
-              </div>
-            ))}
-          </div>
+          <InfoCards
+            date={date}
+            location={location}
+            googleMapsUrl={googleMapsUrl}
+            guidelineImages={guidelineUrls}
+            guidelinesNote={guidelinesNote}
+          />
 
           {prizeInfo && (
             <div className="mt-4 bg-amber-50 border border-amber-200 rounded-xl p-4 max-w-lg mx-auto text-left">
