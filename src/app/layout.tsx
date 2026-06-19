@@ -14,8 +14,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Volleyball Tournament — Бүртгэл',
+  title: 'VB2025',
   description: 'Волейбол тэмцээний багийн бүртгэл',
+  icons: {
+    icon: '/volleyball.svg',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
