@@ -107,116 +107,106 @@ export default function SchedulePage() {
 
   return (
     <div className="min-h-screen bg-white px-4 py-12">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <div className="mb-10 slide-up">
           <h1 className="text-4xl font-black text-slate-800 mb-2">Тоглолтын хуваарь</h1>
           <p className="text-slate-500">Тэмцээний бүх тоглолтын хуваарь</p>
         </div>
 
-        <ScheduleImages images={scheduleImages} />
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Left: match list — 30% */}
+          <div className="lg:w-[30%] shrink-0">
+            {/* Category tabs */}
+            {categories.length > 1 && (
+              <div className="flex flex-wrap gap-2 mb-4">
+                {categories.map(cat => (
+                  <button key={cat} onClick={() => setActiveCategory(cat)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                      activeCategory === cat
+                        ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-200'
+                        : 'bg-white border border-slate-200 text-slate-500 hover:text-slate-700'
+                    }`}>
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            )}
 
-        {/* Category tabs */}
-        {categories.length > 1 && (
-          <div className="flex flex-wrap gap-2 mb-8">
-            {categories.map(cat => (
-              <button key={cat} onClick={() => setActiveCategory(cat)}
-                className={`px-4 py-2 rounded-xl text-sm font-bold transition-all hover:scale-105 ${
-                  activeCategory === cat
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-200'
-                    : 'bg-white border border-slate-200 text-slate-500 hover:text-slate-700 shadow-sm'
-                }`}>
-                {cat}
-              </button>
-            ))}
-          </div>
-        )}
+            {loading ? (
+              <div className="space-y-3">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="bg-white border border-blue-50 rounded-2xl h-24 animate-pulse" />
+                ))}
+              </div>
+            ) : filtered.length === 0 ? (
+              <div className="text-center py-16 fade-in">
+                <Calendar className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                <p className="text-slate-500">Хуваарь байхгүй</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {filtered.map((match, i) => {
+                  const cfg = STATUS_CONFIG[match.status] || STATUS_CONFIG.scheduled;
+                  const StatusIcon = cfg.icon;
+                  const isPlaying = match.status === 'playing';
+                  const isDelayed = match.status === 'delayed';
+                  const isDone = match.status === 'done';
 
-        {loading ? (
-          <div className="space-y-4">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="bg-white border border-blue-50 rounded-2xl h-28 animate-pulse" />
-            ))}
-          </div>
-        ) : filtered.length === 0 ? (
-          <div className="text-center py-24 fade-in">
-            <Calendar className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-            <p className="text-slate-500 text-lg">Тоглолтын хуваарь одоогоор байхгүй байна</p>
-            <p className="text-slate-400 text-sm mt-2">Удахгүй нэмэгдэх болно</p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {filtered.map((match, i) => {
-              const cfg = STATUS_CONFIG[match.status] || STATUS_CONFIG.scheduled;
-              const StatusIcon = cfg.icon;
-              const isPlaying = match.status === 'playing';
-              const isDelayed = match.status === 'delayed';
-              const isDone = match.status === 'done';
-
-              return (
-                <div key={match._id} className="slide-up"
-                  style={{ animationDelay: `${i * 0.06}s` }}>
-                  <div className={`bg-white border rounded-xl p-5 transition-colors ${isPlaying ? 'border-green-200 bg-green-50/30' : isDone ? 'border-slate-200 opacity-70' : 'border-slate-200 hover:border-slate-300'}`}>
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                      {/* Teams */}
-                      <div className="flex items-center gap-3 flex-1">
-                        <div className="text-center flex-1">
-                          <p className={`font-black text-lg leading-tight ${isDone ? 'text-slate-400' : 'text-slate-800'}`}>
+                  return (
+                    <div key={match._id} className="slide-up" style={{ animationDelay: `${i * 0.06}s` }}>
+                      <div className={`bg-white border rounded-xl p-3 transition-colors ${isPlaying ? 'border-green-200 bg-green-50/30' : isDone ? 'border-slate-200 opacity-70' : 'border-slate-200 hover:border-slate-300'}`}>
+                        {/* Teams */}
+                        <div className="flex items-center gap-2 mb-2">
+                          <p className={`font-black text-sm flex-1 text-right leading-tight ${isDone ? 'text-slate-400' : 'text-slate-800'}`}>
                             {match.team1Name}
+                            {isDone && match.score1 && <span className="block text-blue-600 text-lg">{match.score1}</span>}
                           </p>
-                          {isDone && match.score1 && (
-                            <p className="text-2xl font-black text-blue-600">{match.score1}</p>
-                          )}
-                        </div>
-                        <div className={`shrink-0 text-center px-3 py-1.5 rounded-xl font-black text-sm ${
-                          isPlaying ? 'bg-red-100 text-red-600 pulse-glow' : 'bg-slate-100 text-slate-500'
-                        }`}>
-                          {isPlaying ? '🔴 LIVE' : 'VS'}
-                        </div>
-                        <div className="text-center flex-1">
-                          <p className={`font-black text-lg leading-tight ${isDone ? 'text-slate-400' : 'text-slate-800'}`}>
+                          <div className={`shrink-0 px-2 py-1 rounded-lg font-black text-xs ${isPlaying ? 'bg-red-100 text-red-600' : 'bg-slate-100 text-slate-500'}`}>
+                            {isPlaying ? 'LIVE' : 'VS'}
+                          </div>
+                          <p className={`font-black text-sm flex-1 leading-tight ${isDone ? 'text-slate-400' : 'text-slate-800'}`}>
                             {match.team2Name}
+                            {isDone && match.score2 && <span className="block text-blue-600 text-lg">{match.score2}</span>}
                           </p>
-                          {isDone && match.score2 && (
-                            <p className="text-2xl font-black text-blue-600">{match.score2}</p>
-                          )}
                         </div>
-                      </div>
 
-                      {/* Info */}
-                      <div className="flex flex-col gap-2 shrink-0 sm:items-end">
-                        <span className={`inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full border ${cfg.color}`}>
-                          <StatusIcon className="w-3.5 h-3.5" />
-                          {cfg.label}
-                        </span>
-                        <div className="flex items-center gap-3 text-xs text-slate-400">
-                          <span className="flex items-center gap-1">
-                            <Clock className="w-3 h-3" />
-                            {formatTime(match.scheduledTime)}
+                        <div className="flex items-center justify-between gap-2 flex-wrap">
+                          <span className={`inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full border ${cfg.color}`}>
+                            <StatusIcon className="w-3 h-3" />
+                            {cfg.label}
                           </span>
-                          <span className="flex items-center gap-1">
-                            <MapPin className="w-3 h-3" />
-                            {match.court}
-                          </span>
+                          <div className="flex items-center gap-2 text-xs text-slate-400">
+                            <span className="flex items-center gap-0.5">
+                              <Clock className="w-3 h-3" />
+                              {formatTime(match.scheduledTime)}
+                            </span>
+                            <span className="flex items-center gap-0.5">
+                              <MapPin className="w-3 h-3" />
+                              {match.court}
+                            </span>
+                          </div>
                         </div>
-                        <span className="text-xs text-slate-500 bg-slate-100 px-2 py-0.5 rounded-lg">{match.category}</span>
+
+                        {isDelayed && match.delayMinutes > 0 && (
+                          <div className="mt-2 flex items-center gap-1.5 bg-orange-50 border border-orange-200 rounded-lg px-2 py-1.5 text-orange-600 text-xs">
+                            <AlertTriangle className="w-3 h-3 shrink-0" />
+                            <span><strong>{match.delayMinutes} мин</strong> хойшлогдсон</span>
+                          </div>
+                        )}
+                        {match.note && <p className="mt-1 text-xs text-slate-400 italic">{match.note}</p>}
                       </div>
                     </div>
-
-                    {isDelayed && match.delayMinutes > 0 && (
-                      <div className="mt-3 flex items-center gap-2 bg-orange-50 border border-orange-200 rounded-xl px-3 py-2 text-orange-600 text-xs">
-                        <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
-                        <span><strong>{match.delayMinutes} минутаар</strong> хойшлогдсон</span>
-                      </div>
-                    )}
-                    {match.note && (
-                      <p className="mt-2 text-xs text-slate-400 italic">{match.note}</p>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+                  );
+                })}
+              </div>
+            )}
           </div>
-        )}
+
+          {/* Right: schedule images — 70% */}
+          <div className="lg:flex-1">
+            <ScheduleImages images={scheduleImages} />
+          </div>
+        </div>
       </div>
     </div>
   );
