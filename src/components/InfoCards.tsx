@@ -76,7 +76,7 @@ export default function InfoCards({ date, location, googleMapsUrl, guidelineImag
               className={`text-xs font-semibold flex items-center gap-1 transition-colors ${CARD_STYLES[1].iconColor} hover:opacity-70`}
             >
               <ExternalLink className="w-3 h-3" />
-              Google Maps-д нээх
+              Үзэх
             </a>
           )}
         </div>
